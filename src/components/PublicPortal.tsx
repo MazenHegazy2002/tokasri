@@ -420,42 +420,6 @@ export default function PublicPortal({
               >
                 {isRtl ? 'اتصل بنا' : 'Contact Us'}
               </a>
-              <a
-                href="/privacy-policy"
-                onClick={e => {
-                  e.preventDefault();
-                  setRoute('privacy');
-                  if (typeof window !== 'undefined') window.history.pushState({}, '', '/privacy-policy');
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                style={{ color: route === 'privacy' ? '#F2B22E' : 'rgba(255,255,255,.78)' }}
-              >
-                {isRtl ? 'الخصوصية' : 'Privacy Policy'}
-              </a>
-              <a
-                href="/refund-policy"
-                onClick={e => {
-                  e.preventDefault();
-                  setRoute('refund');
-                  if (typeof window !== 'undefined') window.history.pushState({}, '', '/refund-policy');
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                style={{ color: route === 'refund' ? '#F2B22E' : 'rgba(255,255,255,.78)' }}
-              >
-                {isRtl ? 'الاسترداد والإلغاء' : 'Refund Policy'}
-              </a>
-              <a
-                href="/delivery-policy"
-                onClick={e => {
-                  e.preventDefault();
-                  setRoute('delivery');
-                  if (typeof window !== 'undefined') window.history.pushState({}, '', '/delivery-policy');
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                style={{ color: route === 'delivery' ? '#F2B22E' : 'rgba(255,255,255,.78)' }}
-              >
-                {isRtl ? 'سياسة التسليم' : 'Delivery Policy'}
-              </a>
             </nav>
           )}
 
@@ -647,39 +611,6 @@ export default function PublicPortal({
               style={{ color: '#fff', padding: '10px 4px' }}
             >
               {isRtl ? 'اتصل بنا' : 'Contact Us'}
-            </a>
-            <a
-              href="/privacy-policy"
-              onClick={e => {
-                e.preventDefault();
-                setRoute('privacy');
-                setMenuOpen(false);
-              }}
-              style={{ color: 'rgba(255,255,255,.8)', padding: '10px 4px', fontSize: 13 }}
-            >
-              {isRtl ? 'سياسة الخصوصية' : 'Privacy Policy'}
-            </a>
-            <a
-              href="/refund-policy"
-              onClick={e => {
-                e.preventDefault();
-                setRoute('refund');
-                setMenuOpen(false);
-              }}
-              style={{ color: 'rgba(255,255,255,.8)', padding: '10px 4px', fontSize: 13 }}
-            >
-              {isRtl ? 'سياسة الاسترجاع والإلغاء' : 'Refund & Cancellation Policy'}
-            </a>
-            <a
-              href="/delivery-policy"
-              onClick={e => {
-                e.preventDefault();
-                setRoute('delivery');
-                setMenuOpen(false);
-              }}
-              style={{ color: 'rgba(255,255,255,.8)', padding: '10px 4px', fontSize: 13 }}
-            >
-              {isRtl ? 'سياسة التسليم والشحن' : 'Delivery & Shipping Policy'}
             </a>
             {currentUser ? (
               <>
