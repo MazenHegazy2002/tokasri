@@ -1042,7 +1042,8 @@ export async function POST(req: Request) {
           : (db.prepare('SELECT * FROM enrollments WHERE user_id = ? AND course_id = ?').get(userId, courseId) as any);
         if (!row) return NextResponse.json({ error: 'Enrollment not found' }, { status: 404 });
 
-        const targetCourseId = newCourseId && String(newCourseId).trim() ? String(newCourseId).trim() : row.course_id;
+        const candidateCourseId = newCourseId || (enrollmentId ? courseId : '');
+        const targetCourseId = candidateCourseId && String(candidateCourseId).trim() ? String(candidateCourseId).trim() : row.course_id;
         const safeProg = progressPct !== undefined ? Math.min(100, Math.max(0, Number(progressPct) || 0)) : row.progress_pct;
         const nextPlanType = planType !== undefined ? String(planType) : row.plan_type;
 
