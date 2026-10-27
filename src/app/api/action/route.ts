@@ -941,26 +941,97 @@ export async function POST(req: Request) {
       }
 
       case 'create_coupon': {
-        if (!canManagePayments) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-        const { code, description, discountPct, discountFixed, maxUses } = payload;
+        if (!isAdmin && !canManagePayments && !canManageSettings) {
+          return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+        }
+        const { code, description, discountPct, discountFixed, maxUses, active } = payload;
         const safeCode = String(code || '').trim().toUpperCase();
         if (!safeCode) return NextResponse.json({ error: 'Coupon code required' }, { status: 400 });
+        const pct = Math.min(100, Math.max(0, Number(discountPct) || 0));
+        const fixed = Math.max(0, Number(discountFixed) || 0);
+        const defaultDesc = fixed > 0 ? `EGP ${fixed} off` : `${pct}% off`;
         db.prepare(`
           INSERT OR REPLACE INTO coupons (id, code, description, discount_pct, discount_fixed, used_count, max_uses, active)
-          VALUES (?, ?, ?, ?, ?, 0, ?, 1)
+          VALUES (?, ?, ?, ?, ?, 0, ?, ?)
         `).run(
           'cp-' + Date.now(),
           safeCode,
-          description || `${discountPct}% off`,
-          Math.min(100, Math.max(0, Number(discountPct) || 0)),
-          Math.max(0, Number(discountFixed) || 0),
-          Math.max(1, Number(maxUses) || 100)
+          (description || '').trim() || defaultDesc,
+          pct,
+          fixed,
+          Math.max(1, Number(maxUses) || 100),
+          active === undefined ? 1 : active ? 1 : 0
         );
         break;
       }
 
+      case 'update_coupon': {
+        if (!isAdmin && !canManagePayments && !canManageSettings) {
+          return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+        }
+        const id = payload.id || payload.couponId;
+        if (!id) return NextResponse.json({ error: 'Coupon ID required' }, { status: 400 });
+        const existing = db.prepare('SELECT * FROM coupons WHERE id = ?').get(id) as any;
+        if (!existing) return NextResponse.json({ error: 'Coupon not found' }, { status: 404 });
+
+        const nextCode =
+          payload.code !== undefined
+            ? String(payload.code).trim().toUpperCase() || existing.code
+            : existing.code;
+        const nextPct =
+          payload.discountPct !== undefined
+            ? Math.min(100, Math.max(0, Number(payload.discountPct) || 0))
+            : payload.discount_pct !== undefined
+            ? Math.min(100, Math.max(0, Number(payload.discount_pct) || 0))
+            : existing.discount_pct;
+        const nextFixed =
+          payload.discountFixed !== undefined
+            ? Math.max(0, Number(payload.discountFixed) || 0)
+            : payload.discount_fixed !== undefined
+            ? Math.max(0, Number(payload.discount_fixed) || 0)
+            : existing.discount_fixed;
+        const nextDesc =
+          payload.description !== undefined
+            ? String(payload.description).trim()
+            : existing.description;
+        const nextMaxUses =
+          payload.maxUses !== undefined
+            ? Math.max(1, Number(payload.maxUses) || 1)
+            : payload.max_uses !== undefined
+            ? Math.max(1, Number(payload.max_uses) || 1)
+            : existing.max_uses;
+        const nextUsedCount =
+          payload.usedCount !== undefined
+            ? Math.max(0, Number(payload.usedCount) || 0)
+            : payload.used_count !== undefined
+            ? Math.max(0, Number(payload.used_count) || 0)
+            : existing.used_count;
+        const nextActive =
+          payload.active !== undefined ? (payload.active ? 1 : 0) : existing.active;
+
+        db.prepare(
+          'UPDATE coupons SET code = ?, description = ?, discount_pct = ?, discount_fixed = ?, max_uses = ?, used_count = ?, active = ? WHERE id = ?'
+        ).run(nextCode, nextDesc, nextPct, nextFixed, nextMaxUses, nextUsedCount, nextActive, id);
+        break;
+      }
+
+      case 'toggle_coupon': {
+        if (!isAdmin && !canManagePayments && !canManageSettings) {
+          return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+        }
+        const id = payload.id || payload.couponId;
+        if (!id) return NextResponse.json({ error: 'Coupon ID required' }, { status: 400 });
+        const existing = db.prepare('SELECT * FROM coupons WHERE id = ?').get(id) as any;
+        if (!existing) return NextResponse.json({ error: 'Coupon not found' }, { status: 404 });
+        const nextActive = payload.active !== undefined ? (payload.active ? 1 : 0) : existing.active ? 0 : 1;
+        db.prepare('UPDATE coupons SET active = ? WHERE id = ?').run(nextActive, id);
+        break;
+      }
+
       case 'delete_coupon': {
-        if (!canManagePayments) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+        if (!isAdmin && !canManagePayments && !canManageSettings) {
+          return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+        }
         const id = payload.id || payload.couponId;
         db.prepare('DELETE FROM coupons WHERE id = ?').run(id);
         break;

@@ -141,7 +141,11 @@ export default function PublicPortal({
   const membershipMonthlyPrice = Number(activePlanObj?.price || pg.subscriptions?.monthlyPrice) || 199;
   const baseSubtotal = checkoutPlan === 'Membership' ? membershipMonthlyPrice : (currentCourse?.price ?? 450);
   const matchedCoupon = (state.coupons || []).find(
-    (cp: any) => cp.code.toUpperCase() === appliedCoupon.trim().toUpperCase() && cp.active
+    (cp: any) =>
+      cp.code.toUpperCase() === appliedCoupon.trim().toUpperCase() &&
+      cp.active !== 0 &&
+      cp.active !== false &&
+      Number(cp.used_count || 0) < Number(cp.max_uses || 100)
   );
   const discountAmount = matchedCoupon
     ? matchedCoupon.discount_pct > 0

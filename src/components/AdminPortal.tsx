@@ -314,7 +314,12 @@ export default function AdminPortal({
   const [showNewCoupon, setShowNewCoupon] = useState<boolean>(false);
   const [cpCode, setCpCode] = useState<string>('');
   const [cpDesc, setCpDesc] = useState<string>('');
-  const [cpPct, setCpPct] = useState<string>('20');
+  const [cpPct, setCpPct] = useState<string>('25');
+  const [cpFixed, setCpFixed] = useState<string>('0');
+  const [cpMaxUses, setCpMaxUses] = useState<string>('100');
+  const [cpType, setCpType] = useState<'pct' | 'fixed'>('pct');
+  const [editingCouponId, setEditingCouponId] = useState<string | null>(null);
+  const [editCpDraft, setEditCpDraft] = useState<any | null>(null);
   const [receiptPreviewUrl, setReceiptPreviewUrl] = useState<string | null>(null);
   const [receiptPreviewPayment, setReceiptPreviewPayment] = useState<any | null>(null);
 
@@ -7598,23 +7603,40 @@ D) Number Needed to Treat (NNT)`;
                           gap: 10,
                         }}
                       >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
                           <span style={{ fontWeight: 700 }}>Coupons</span>
-                          <button
-                            onClick={() => setShowNewCoupon(!showNewCoupon)}
-                            style={{
-                              border: 0,
-                              background: '#EFE6CF',
-                              color: '#0A2160',
-                              borderRadius: 999,
-                              padding: '6px 12px',
-                              fontWeight: 700,
-                              fontSize: 12,
-                              cursor: 'pointer',
-                            }}
-                          >
-                            + New
-                          </button>
+                          <div style={{ display: 'flex', gap: 6 }}>
+                            <button
+                              onClick={() => setRoute('settings')}
+                              style={{
+                                border: '1px solid #D8D3C6',
+                                background: '#fff',
+                                color: '#0A2160',
+                                borderRadius: 999,
+                                padding: '6px 10px',
+                                fontWeight: 700,
+                                fontSize: 11,
+                                cursor: 'pointer',
+                              }}
+                            >
+                              Manage in Settings
+                            </button>
+                            <button
+                              onClick={() => setShowNewCoupon(!showNewCoupon)}
+                              style={{
+                                border: 0,
+                                background: '#EFE6CF',
+                                color: '#0A2160',
+                                borderRadius: 999,
+                                padding: '6px 12px',
+                                fontWeight: 700,
+                                fontSize: 12,
+                                cursor: 'pointer',
+                              }}
+                            >
+                              + New
+                            </button>
+                          </div>
                         </div>
 
                         {showNewCoupon && (
@@ -7676,42 +7698,61 @@ D) Number Needed to Treat (NNT)`;
                           </div>
                         )}
 
-                        {(state.coupons || []).map((c: any) => (
-                          <div
-                            key={c.id}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 10,
-                              padding: '10px 12px',
-                              border: '1px dashed #D3CDBF',
-                              borderRadius: 10,
-                            }}
-                          >
-                            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: '#0A2160' }}>
-                              {c.code}
-                            </span>
-                            <span style={{ flex: 1, fontSize: 12, color: '#5A6280' }}>{c.description}</span>
-                            <span style={{ fontSize: 12, fontWeight: 700 }}>
-                              {c.used_count} / {c.max_uses}
-                            </span>
-                            <button
-                              onClick={() => onAction('delete_coupon', { couponId: c.id })}
-                              title="Delete coupon"
+                        {(state.coupons || []).map((c: any) => {
+                          const isActive = c.active !== 0 && c.active !== false;
+                          return (
+                            <div
+                              key={c.id}
                               style={{
-                                border: 0,
-                                background: 'transparent',
-                                color: '#C2412D',
-                                cursor: 'pointer',
-                                fontSize: 14,
-                                fontWeight: 700,
-                                padding: '0 4px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 10,
+                                padding: '10px 12px',
+                                border: '1px dashed #D3CDBF',
+                                borderRadius: 10,
+                                opacity: isActive ? 1 : 0.6,
                               }}
                             >
-                              ×
-                            </button>
-                          </div>
-                        ))}
+                              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: '#0A2160' }}>
+                                {c.code}
+                              </span>
+                              <span style={{ flex: 1, fontSize: 12, color: '#5A6280' }}>{c.description}</span>
+                              <button
+                                onClick={() => onAction('toggle_coupon', { id: c.id })}
+                                style={{
+                                  border: 0,
+                                  background: isActive ? '#E3F3EA' : '#FBE7E3',
+                                  color: isActive ? '#145E3D' : '#C2412D',
+                                  borderRadius: 999,
+                                  padding: '3px 8px',
+                                  fontSize: 10,
+                                  fontWeight: 800,
+                                  cursor: 'pointer',
+                                }}
+                              >
+                                {isActive ? 'ACTIVE' : 'OFF'}
+                              </button>
+                              <span style={{ fontSize: 12, fontWeight: 700 }}>
+                                {c.used_count} / {c.max_uses}
+                              </span>
+                              <button
+                                onClick={() => onAction('delete_coupon', { couponId: c.id })}
+                                title="Delete coupon"
+                                style={{
+                                  border: 0,
+                                  background: 'transparent',
+                                  color: '#C2412D',
+                                  cursor: 'pointer',
+                                  fontSize: 14,
+                                  fontWeight: 700,
+                                  padding: '0 4px',
+                                }}
+                              >
+                                ×
+                              </button>
+                            </div>
+                          );
+                        })}
                       </div>
 
                       <div
@@ -8665,6 +8706,602 @@ D) Number Needed to Treat (NNT)`;
                   </div>
                 );
               })()}
+
+              {/* DISCOUNT COUPONS & PROMO CODES CONTROL PANEL */}
+              <div
+                style={{
+                  background: '#fff',
+                  border: '2px solid #071A44',
+                  borderRadius: 18,
+                  overflow: 'hidden',
+                }}
+              >
+                <div
+                  style={{
+                    padding: '16px 20px',
+                    background: '#071A44',
+                    color: '#fff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: 12,
+                    flexWrap: 'wrap',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <span
+                      className="material-icon"
+                      style={{
+                        width: 38,
+                        height: 38,
+                        borderRadius: 10,
+                        background: '#F2B22E',
+                        color: '#071A44',
+                        display: 'grid',
+                        placeItems: 'center',
+                        fontSize: 22,
+                      }}
+                    >
+                      confirmation_number
+                    </span>
+                    <div>
+                      <div style={{ fontWeight: 800, fontSize: 16 }}>
+                        Discount Coupons &amp; Promo Codes Control
+                      </div>
+                      <div style={{ fontSize: 12, color: 'rgba(255,255,255,.76)' }}>
+                        Create, edit, activate/deactivate, set usage limits, and delete checkout promo codes (% off or fixed EGP discount).
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    <button
+                      type="button"
+                      onClick={() => setShowNewCoupon(!showNewCoupon)}
+                      style={{
+                        border: '2px solid #F2B22E',
+                        background: '#F2B22E',
+                        color: '#071A44',
+                        borderRadius: 999,
+                        padding: '8px 16px',
+                        fontSize: 12,
+                        fontWeight: 800,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 6,
+                      }}
+                    >
+                      <span className="material-icon" style={{ fontSize: 16 }}>
+                        {showNewCoupon ? 'close' : 'add'}
+                      </span>
+                      {showNewCoupon ? 'Close New Coupon Form' : '+ Add New Coupon'}
+                    </button>
+                  </div>
+                </div>
+
+                {showNewCoupon && (
+                  <div
+                    style={{
+                      padding: '18px 20px',
+                      background: '#F6F3EC',
+                      borderBottom: '1px solid #E4DFD3',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 12,
+                    }}
+                  >
+                    <div style={{ fontWeight: 800, fontSize: 14, color: '#0A2160' }}>
+                      Create New Discount Coupon
+                    </div>
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))',
+                        gap: 10,
+                      }}
+                    >
+                      <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#5A6280' }}>COUPON CODE *</span>
+                        <input
+                          value={cpCode}
+                          onChange={e => setCpCode(e.target.value.toUpperCase())}
+                          placeholder="e.g. EPNU30"
+                          style={{
+                            border: '1px solid #D8D3C6',
+                            borderRadius: 10,
+                            padding: '9px 12px',
+                            fontSize: 13,
+                            fontWeight: 700,
+                            fontFamily: "'JetBrains Mono', monospace",
+                            background: '#fff',
+                          }}
+                        />
+                      </label>
+
+                      <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#5A6280' }}>DISCOUNT TYPE</span>
+                        <select
+                          value={cpType}
+                          onChange={e => setCpType(e.target.value as 'pct' | 'fixed')}
+                          style={{
+                            border: '1px solid #D8D3C6',
+                            borderRadius: 10,
+                            padding: '9px 12px',
+                            fontSize: 13,
+                            fontWeight: 700,
+                            background: '#fff',
+                          }}
+                        >
+                          <option value="pct">Percentage (% Off)</option>
+                          <option value="fixed">Fixed Amount (EGP Off)</option>
+                        </select>
+                      </label>
+
+                      {cpType === 'pct' ? (
+                        <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                          <span style={{ fontSize: 11, fontWeight: 700, color: '#5A6280' }}>PERCENTAGE OFF (%)</span>
+                          <input
+                            type="number"
+                            min={1}
+                            max={100}
+                            value={cpPct}
+                            onChange={e => setCpPct(e.target.value)}
+                            placeholder="25"
+                            style={{
+                              border: '1px solid #D8D3C6',
+                              borderRadius: 10,
+                              padding: '9px 12px',
+                              fontSize: 13,
+                              fontWeight: 700,
+                              background: '#fff',
+                            }}
+                          />
+                        </label>
+                      ) : (
+                        <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                          <span style={{ fontSize: 11, fontWeight: 700, color: '#5A6280' }}>FIXED DISCOUNT (EGP)</span>
+                          <input
+                            type="number"
+                            min={1}
+                            value={cpFixed}
+                            onChange={e => setCpFixed(e.target.value)}
+                            placeholder="50"
+                            style={{
+                              border: '1px solid #D8D3C6',
+                              borderRadius: 10,
+                              padding: '9px 12px',
+                              fontSize: 13,
+                              fontWeight: 700,
+                              background: '#fff',
+                            }}
+                          />
+                        </label>
+                      )}
+
+                      <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#5A6280' }}>MAX USES LIMIT</span>
+                        <input
+                          type="number"
+                          min={1}
+                          value={cpMaxUses}
+                          onChange={e => setCpMaxUses(e.target.value)}
+                          placeholder="100"
+                          style={{
+                            border: '1px solid #D8D3C6',
+                            borderRadius: 10,
+                            padding: '9px 12px',
+                            fontSize: 13,
+                            fontWeight: 700,
+                            background: '#fff',
+                          }}
+                        />
+                      </label>
+
+                      <label style={{ display: 'flex', flexDirection: 'column', gap: 4, gridColumn: '1 / -1' }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#5A6280' }}>DESCRIPTION</span>
+                        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                          <input
+                            value={cpDesc}
+                            onChange={e => setCpDesc(e.target.value)}
+                            placeholder={
+                              cpType === 'pct'
+                                ? `${cpPct || 25}% off any course or membership`
+                                : `EGP ${cpFixed || 50} off any course or membership`
+                            }
+                            style={{
+                              flex: '1 1 260px',
+                              border: '1px solid #D8D3C6',
+                              borderRadius: 10,
+                              padding: '9px 12px',
+                              fontSize: 13,
+                              background: '#fff',
+                            }}
+                          />
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              if (!cpCode.trim()) return;
+                              const isPct = cpType === 'pct';
+                              const pctVal = isPct ? Math.min(100, Math.max(1, Number(cpPct) || 25)) : 0;
+                              const fixedVal = !isPct ? Math.max(1, Number(cpFixed) || 50) : 0;
+                              await onAction('create_coupon', {
+                                code: cpCode.trim().toUpperCase(),
+                                description:
+                                  cpDesc.trim() ||
+                                  (isPct ? `${pctVal}% off any course` : `EGP ${fixedVal} off any course`),
+                                discountPct: pctVal,
+                                discountFixed: fixedVal,
+                                maxUses: Math.max(1, Number(cpMaxUses) || 100),
+                                active: 1,
+                              });
+                              setCpCode('');
+                              setCpDesc('');
+                              setCpPct('25');
+                              setCpFixed('0');
+                              setCpMaxUses('100');
+                              setShowNewCoupon(false);
+                            }}
+                            style={{
+                              border: 0,
+                              background: '#071A44',
+                              color: '#fff',
+                              borderRadius: 10,
+                              padding: '10px 20px',
+                              fontWeight: 800,
+                              fontSize: 13,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            Save &amp; Activate Coupon
+                          </button>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  {(state.coupons || []).length === 0 ? (
+                    <div style={{ padding: 24, textAlign: 'center', color: '#5A6280', fontSize: 13 }}>
+                      No discount coupons configured yet. Click &ldquo;+ Add New Coupon&rdquo; above to create one.
+                    </div>
+                  ) : (
+                    (state.coupons || []).map((c: any, idx: number) => {
+                      const isActive = c.active !== 0 && c.active !== false;
+                      const isEditing = editingCouponId === c.id && editCpDraft;
+                      const isFixed = Number(c.discount_fixed) > 0 && Number(c.discount_pct) === 0;
+
+                      return (
+                        <div
+                          key={c.id}
+                          style={{
+                            padding: '16px 20px',
+                            borderTop: idx === 0 ? 'none' : '1px solid #F0ECE2',
+                            background: isEditing ? '#FAF8F3' : '#fff',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 12,
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              gap: 14,
+                              flexWrap: 'wrap',
+                            }}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: '1 1 300px', flexWrap: 'wrap' }}>
+                              <span
+                                style={{
+                                  fontFamily: "'JetBrains Mono', monospace",
+                                  fontWeight: 800,
+                                  fontSize: 15,
+                                  color: '#071A44',
+                                  background: '#EFE6CF',
+                                  border: '1px dashed #B59E6B',
+                                  borderRadius: 8,
+                                  padding: '6px 12px',
+                                }}
+                              >
+                                {c.code}
+                              </span>
+                              <span
+                                style={{
+                                  fontSize: 12,
+                                  fontWeight: 800,
+                                  padding: '4px 10px',
+                                  borderRadius: 999,
+                                  background: '#EAF0FB',
+                                  color: '#1446A0',
+                                }}
+                              >
+                                {isFixed ? `EGP ${c.discount_fixed} OFF` : `${c.discount_pct}% OFF`}
+                              </span>
+                              <span
+                                style={{
+                                  fontSize: 11,
+                                  fontWeight: 800,
+                                  padding: '4px 10px',
+                                  borderRadius: 999,
+                                  background: isActive ? '#E3F3EA' : '#FBE7E3',
+                                  color: isActive ? '#145E3D' : '#C2412D',
+                                }}
+                              >
+                                {isActive ? 'ACTIVE ON CHECKOUT' : 'DISABLED'}
+                              </span>
+                              <span style={{ fontSize: 13, color: '#3A4260', fontWeight: 600 }}>
+                                {c.description}
+                              </span>
+                            </div>
+
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                              <span
+                                style={{
+                                  fontSize: 12,
+                                  fontWeight: 700,
+                                  color: '#5A6280',
+                                  background: '#F6F3EC',
+                                  padding: '6px 10px',
+                                  borderRadius: 8,
+                                }}
+                              >
+                                Uses: <strong style={{ color: '#0E1736' }}>{c.used_count}</strong> / {c.max_uses}
+                              </span>
+
+                              <button
+                                type="button"
+                                onClick={() => onAction('toggle_coupon', { id: c.id })}
+                                style={{
+                                  border: `1.5px solid ${isActive ? '#1E8A5A' : '#D8D3C6'}`,
+                                  background: isActive ? '#E3F3EA' : '#fff',
+                                  color: isActive ? '#145E3D' : '#5A6280',
+                                  borderRadius: 999,
+                                  padding: '6px 12px',
+                                  fontSize: 12,
+                                  fontWeight: 800,
+                                  cursor: 'pointer',
+                                }}
+                              >
+                                {isActive ? 'Disable' : 'Enable'}
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (isEditing) {
+                                    setEditingCouponId(null);
+                                    setEditCpDraft(null);
+                                  } else {
+                                    setEditingCouponId(c.id);
+                                    setEditCpDraft({
+                                      code: c.code,
+                                      description: c.description,
+                                      type: Number(c.discount_fixed) > 0 && Number(c.discount_pct) === 0 ? 'fixed' : 'pct',
+                                      discountPct: String(c.discount_pct ?? 0),
+                                      discountFixed: String(c.discount_fixed ?? 0),
+                                      maxUses: String(c.max_uses ?? 100),
+                                      usedCount: String(c.used_count ?? 0),
+                                      active: isActive,
+                                    });
+                                  }
+                                }}
+                                style={{
+                                  border: '1px solid #D8D3C6',
+                                  background: isEditing ? '#071A44' : '#fff',
+                                  color: isEditing ? '#fff' : '#0A2160',
+                                  borderRadius: 999,
+                                  padding: '6px 12px',
+                                  fontSize: 12,
+                                  fontWeight: 700,
+                                  cursor: 'pointer',
+                                }}
+                              >
+                                {isEditing ? 'Close Edit' : 'Edit Coupon'}
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => onAction('delete_coupon', { id: c.id })}
+                                style={{
+                                  border: '1px solid #F3C4BC',
+                                  background: '#FBE7E3',
+                                  color: '#C2412D',
+                                  borderRadius: 999,
+                                  padding: '6px 12px',
+                                  fontSize: 12,
+                                  fontWeight: 700,
+                                  cursor: 'pointer',
+                                }}
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </div>
+
+                          {isEditing && editCpDraft && (
+                            <div
+                              style={{
+                                marginTop: 4,
+                                padding: 14,
+                                background: '#fff',
+                                border: '1px solid #D8D3C6',
+                                borderRadius: 12,
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+                                gap: 10,
+                                alignItems: 'end',
+                              }}
+                            >
+                              <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                <span style={{ fontSize: 11, fontWeight: 700, color: '#5A6280' }}>COUPON CODE</span>
+                                <input
+                                  value={editCpDraft.code}
+                                  onChange={e =>
+                                    setEditCpDraft({ ...editCpDraft, code: e.target.value.toUpperCase() })
+                                  }
+                                  style={{
+                                    border: '1px solid #D8D3C6',
+                                    borderRadius: 8,
+                                    padding: '8px 10px',
+                                    fontSize: 13,
+                                    fontWeight: 700,
+                                    fontFamily: "'JetBrains Mono', monospace",
+                                  }}
+                                />
+                              </label>
+
+                              <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                <span style={{ fontSize: 11, fontWeight: 700, color: '#5A6280' }}>DISCOUNT TYPE</span>
+                                <select
+                                  value={editCpDraft.type}
+                                  onChange={e => setEditCpDraft({ ...editCpDraft, type: e.target.value })}
+                                  style={{
+                                    border: '1px solid #D8D3C6',
+                                    borderRadius: 8,
+                                    padding: '8px 10px',
+                                    fontSize: 13,
+                                    fontWeight: 700,
+                                    background: '#fff',
+                                  }}
+                                >
+                                  <option value="pct">Percentage (% Off)</option>
+                                  <option value="fixed">Fixed Amount (EGP Off)</option>
+                                </select>
+                              </label>
+
+                              {editCpDraft.type === 'pct' ? (
+                                <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                  <span style={{ fontSize: 11, fontWeight: 700, color: '#5A6280' }}>DISCOUNT (%)</span>
+                                  <input
+                                    type="number"
+                                    min={1}
+                                    max={100}
+                                    value={editCpDraft.discountPct}
+                                    onChange={e =>
+                                      setEditCpDraft({ ...editCpDraft, discountPct: e.target.value, discountFixed: '0' })
+                                    }
+                                    style={{
+                                      border: '1px solid #D8D3C6',
+                                      borderRadius: 8,
+                                      padding: '8px 10px',
+                                      fontSize: 13,
+                                      fontWeight: 700,
+                                    }}
+                                  />
+                                </label>
+                              ) : (
+                                <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                  <span style={{ fontSize: 11, fontWeight: 700, color: '#5A6280' }}>FIXED EGP OFF</span>
+                                  <input
+                                    type="number"
+                                    min={1}
+                                    value={editCpDraft.discountFixed}
+                                    onChange={e =>
+                                      setEditCpDraft({ ...editCpDraft, discountFixed: e.target.value, discountPct: '0' })
+                                    }
+                                    style={{
+                                      border: '1px solid #D8D3C6',
+                                      borderRadius: 8,
+                                      padding: '8px 10px',
+                                      fontSize: 13,
+                                      fontWeight: 700,
+                                    }}
+                                  />
+                                </label>
+                              )}
+
+                              <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                <span style={{ fontSize: 11, fontWeight: 700, color: '#5A6280' }}>MAX USES</span>
+                                <input
+                                  type="number"
+                                  min={1}
+                                  value={editCpDraft.maxUses}
+                                  onChange={e => setEditCpDraft({ ...editCpDraft, maxUses: e.target.value })}
+                                  style={{
+                                    border: '1px solid #D8D3C6',
+                                    borderRadius: 8,
+                                    padding: '8px 10px',
+                                    fontSize: 13,
+                                    fontWeight: 700,
+                                  }}
+                                />
+                              </label>
+
+                              <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                <span style={{ fontSize: 11, fontWeight: 700, color: '#5A6280' }}>USED COUNT</span>
+                                <input
+                                  type="number"
+                                  min={0}
+                                  value={editCpDraft.usedCount}
+                                  onChange={e => setEditCpDraft({ ...editCpDraft, usedCount: e.target.value })}
+                                  style={{
+                                    border: '1px solid #D8D3C6',
+                                    borderRadius: 8,
+                                    padding: '8px 10px',
+                                    fontSize: 13,
+                                    fontWeight: 700,
+                                  }}
+                                />
+                              </label>
+
+                              <label style={{ display: 'flex', flexDirection: 'column', gap: 4, gridColumn: '1 / -1' }}>
+                                <span style={{ fontSize: 11, fontWeight: 700, color: '#5A6280' }}>DESCRIPTION</span>
+                                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                                  <input
+                                    value={editCpDraft.description}
+                                    onChange={e =>
+                                      setEditCpDraft({ ...editCpDraft, description: e.target.value })
+                                    }
+                                    style={{
+                                      flex: '1 1 240px',
+                                      border: '1px solid #D8D3C6',
+                                      borderRadius: 8,
+                                      padding: '8px 10px',
+                                      fontSize: 13,
+                                    }}
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={async () => {
+                                      const isPct = editCpDraft.type === 'pct';
+                                      await onAction('update_coupon', {
+                                        id: c.id,
+                                        code: editCpDraft.code,
+                                        description: editCpDraft.description,
+                                        discountPct: isPct ? Number(editCpDraft.discountPct) || 0 : 0,
+                                        discountFixed: !isPct ? Number(editCpDraft.discountFixed) || 0 : 0,
+                                        maxUses: Number(editCpDraft.maxUses) || 100,
+                                        usedCount: Number(editCpDraft.usedCount) || 0,
+                                        active: editCpDraft.active ? 1 : 0,
+                                      });
+                                      setEditingCouponId(null);
+                                      setEditCpDraft(null);
+                                    }}
+                                    style={{
+                                      border: 0,
+                                      background: '#1E8A5A',
+                                      color: '#fff',
+                                      borderRadius: 8,
+                                      padding: '8px 16px',
+                                      fontWeight: 800,
+                                      fontSize: 12,
+                                      cursor: 'pointer',
+                                    }}
+                                  >
+                                    Save Changes
+                                  </button>
+                                </div>
+                              </label>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
 
               <div style={{ fontWeight: 800, fontSize: 17, color: '#0A2160' }}>Co-Admin Feature Permissions</div>
               <div style={{ background: '#fff', border: '1px solid #E4DFD3', borderRadius: 18, overflow: 'hidden' }}>
