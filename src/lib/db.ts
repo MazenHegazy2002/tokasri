@@ -1,8 +1,279 @@
-import { DatabaseSync } from 'node:sqlite';
 import path from 'node:path';
 import fs from 'node:fs';
-import os from 'node:os';
 import crypto from 'node:crypto';
+
+export interface SqliteStatement {
+  run: (...params: any[]) => any;
+  get: (...params: any[]) => any;
+  all: (...params: any[]) => any[];
+}
+
+export interface SqliteDatabase {
+  exec: (sql: string) => void;
+  prepare: (sql: string) => SqliteStatement;
+}
+
+class InMemorySqliteDb implements SqliteDatabase {
+  private tables: Record<string, any[]> = {};
+  private defaults: Record<string, Record<string, any>> = {};
+  private primaryKeys: Record<string, string> = {};
+  private rowidCounter = 0;
+
+  exec(sql: string): void {
+    const createRegex = /CREATE\s+TABLE\s+IF\s+NOT\s+EXISTS\s+(\w+)\s*\(([\s\S]*?)\);/gi;
+    let match: RegExpExecArray | null;
+    while ((match = createRegex.exec(sql)) !== null) {
+      const tableName = match[1];
+      const body = match[2];
+      if (!this.tables[tableName]) this.tables[tableName] = [];
+      if (!this.defaults[tableName]) this.defaults[tableName] = {};
+      const lines = body
+        .split(',')
+        .map(l => l.trim())
+        .filter(Boolean);
+      for (const line of lines) {
+        const colMatch = line.match(/^(\w+)\s+(TEXT|INTEGER)/i);
+        if (!colMatch) continue;
+        const colName = colMatch[1];
+        const colType = colMatch[2].toUpperCase();
+        if (/PRIMARY\s+KEY/i.test(line)) {
+          this.primaryKeys[tableName] = colName;
+        }
+        const defMatch = line.match(/DEFAULT\s+('(?:[^']*)'|-?\d+)/i);
+        if (defMatch) {
+          const rawDef = defMatch[1];
+          this.defaults[tableName][colName] = rawDef.startsWith("'")
+            ? rawDef.slice(1, -1)
+            : Number(rawDef);
+        } else {
+          this.defaults[tableName][colName] = colType === 'INTEGER' ? 0 : '';
+        }
+      }
+    }
+  }
+
+  private parseValueTokens(str: string): string[] {
+    const tokens: string[] = [];
+    let cur = '';
+    let inQuotes = false;
+    let depth = 0;
+    for (let i = 0; i < str.length; i++) {
+      const ch = str[i];
+      if (ch === "'" && str[i - 1] !== '\\') {
+        inQuotes = !inQuotes;
+        cur += ch;
+      } else if (!inQuotes && ch === '(') {
+        depth++;
+        cur += ch;
+      } else if (!inQuotes && ch === ')') {
+        depth--;
+        cur += ch;
+      } else if (!inQuotes && depth === 0 && ch === ',') {
+        tokens.push(cur.trim());
+        cur = '';
+      } else {
+        cur += ch;
+      }
+    }
+    if (cur.trim()) tokens.push(cur.trim());
+    return tokens;
+  }
+
+  private matchesWhere(row: any, whereClause: string | undefined, params: any[], paramOffsetRef: { idx: number }): boolean {
+    if (!whereClause) return true;
+    const conditions = whereClause.split(/\s+AND\s+/i).map(c => c.trim());
+    let matched = true;
+    for (const cond of conditions) {
+      let m: RegExpMatchArray | null;
+      if ((m = cond.match(/^lower\((\w+)\)\s*=\s*lower\(\?\)$/i))) {
+        const col = m[1];
+        const val = String(params[paramOffsetRef.idx++] ?? '').toLowerCase();
+        if (String(row[col] ?? '').toLowerCase() !== val) matched = false;
+      } else if ((m = cond.match(/^(\w+)\s*=\s*\?$/i))) {
+        const col = m[1];
+        const val = params[paramOffsetRef.idx++];
+        if (String(row[col] ?? '') !== String(val ?? '')) matched = false;
+      } else if ((m = cond.match(/^(\w+)\s*<=\s*(-?\d+)$/i))) {
+        const col = m[1];
+        const num = Number(m[2]);
+        if (!(Number(row[col] ?? 0) <= num)) matched = false;
+      } else if ((m = cond.match(/^(\w+)\s+NOT\s+LIKE\s+'([^']+)'$/i))) {
+        const col = m[1];
+        const pattern = m[2].replace(/%/g, '.*');
+        const re = new RegExp(`^${pattern}$`, 'i');
+        if (re.test(String(row[col] ?? ''))) matched = false;
+      } else if ((m = cond.match(/^(\w+)\s*=\s*'([^']*)'$/i))) {
+        const col = m[1];
+        if (String(row[col] ?? '') !== m[2]) matched = false;
+      }
+    }
+    return matched;
+  }
+
+  prepare(sql: string): SqliteStatement {
+    const cleanSql = sql.replace(/\s+/g, ' ').trim();
+
+    const executeSelect = (params: any[]): any[] => {
+      const m = cleanSql.match(
+        /^SELECT\s+(.+?)\s+FROM\s+(\w+)(?:\s+WHERE\s+(.+?))?(?:\s+ORDER\s+BY\s+(.+))?$/i
+      );
+      if (!m) return [];
+      const selectExpr = m[1].trim();
+      const table = m[2].trim();
+      const whereExpr = m[3]?.trim();
+      const orderExpr = m[4]?.trim();
+      const tableRows = this.tables[table] || [];
+
+      const filtered = tableRows.filter(r => {
+        const ref = { idx: 0 };
+        return this.matchesWhere(r, whereExpr, params, ref);
+      });
+
+      if (/^COUNT\(\*\)\s+as\s+(\w+)$/i.test(selectExpr)) {
+        const alias = selectExpr.match(/^COUNT\(\*\)\s+as\s+(\w+)$/i)![1];
+        return [{ [alias]: filtered.length }];
+      }
+
+      const sorted = [...filtered];
+      if (orderExpr) {
+        const orderParts = orderExpr.split(',').map(p => p.trim());
+        sorted.sort((a, b) => {
+          for (const part of orderParts) {
+            const [rawCol, rawDir] = part.split(/\s+/);
+            const col = rawCol.toLowerCase() === 'rowid' ? '_rowid' : rawCol;
+            const desc = (rawDir || '').toUpperCase() === 'DESC';
+            const va = a[col];
+            const vb = b[col];
+            if (va === vb) continue;
+            const cmp = va < vb ? -1 : 1;
+            return desc ? -cmp : cmp;
+          }
+          return 0;
+        });
+      }
+
+      if (selectExpr === '*') {
+        return sorted.map(r => {
+          const { _rowid, ...rest } = r;
+          return { ...rest };
+        });
+      }
+
+      const cols = selectExpr.split(',').map(c => c.trim());
+      return sorted.map(r => {
+        const out: Record<string, any> = {};
+        for (const c of cols) out[c] = r[c];
+        return out;
+      });
+    };
+
+    const executeRun = (params: any[]): any => {
+      // 1. INSERT [OR REPLACE]
+      const insMatch = cleanSql.match(
+        /^INSERT\s+(OR\s+REPLACE\s+)?INTO\s+(\w+)\s*\(([^)]+)\)\s*VALUES\s*\(([\s\S]+)\)$/i
+      );
+      if (insMatch) {
+        const isReplace = !!insMatch[1];
+        const table = insMatch[2];
+        const cols = insMatch[3].split(',').map(c => c.trim());
+        const valTokens = this.parseValueTokens(insMatch[4]);
+        if (!this.tables[table]) this.tables[table] = [];
+        const newRow: Record<string, any> = {
+          ...(this.defaults[table] || {}),
+          _rowid: ++this.rowidCounter,
+        };
+        let pIdx = 0;
+        for (let i = 0; i < cols.length; i++) {
+          const col = cols[i];
+          const tok = valTokens[i] ?? '?';
+          if (tok === '?') {
+            newRow[col] = params[pIdx++];
+          } else if (tok.startsWith("'") && tok.endsWith("'")) {
+            newRow[col] = tok.slice(1, -1);
+          } else {
+            newRow[col] = Number(tok);
+          }
+        }
+        const pk = this.primaryKeys[table] || 'id';
+        if (isReplace && newRow[pk] !== undefined) {
+          this.tables[table] = this.tables[table].filter(r => r[pk] !== newRow[pk]);
+        }
+        // Also handle unique code on coupons
+        if (isReplace && table === 'coupons' && newRow.code !== undefined) {
+          this.tables[table] = this.tables[table].filter(r => r.code !== newRow.code);
+        }
+        this.tables[table].push(newRow);
+        return { changes: 1 };
+      }
+
+      // 2. UPDATE
+      const updMatch = cleanSql.match(/^UPDATE\s+(\w+)\s+SET\s+(.+?)(?:\s+WHERE\s+(.+))?$/i);
+      if (updMatch) {
+        const table = updMatch[1];
+        const setClause = updMatch[2].trim();
+        const whereClause = updMatch[3]?.trim();
+        const assignments = this.parseValueTokens(setClause);
+        const tableRows = this.tables[table] || [];
+
+        let setParamCount = 0;
+        for (const assign of assignments) {
+          const qMarks = (assign.match(/\?/g) || []).length;
+          setParamCount += qMarks;
+        }
+
+        let changes = 0;
+        for (const row of tableRows) {
+          const whereRef = { idx: setParamCount };
+          if (!this.matchesWhere(row, whereClause, params, whereRef)) continue;
+          let pIdx = 0;
+          for (const assign of assignments) {
+            const eqIdx = assign.indexOf('=');
+            const col = assign.slice(0, eqIdx).trim();
+            const expr = assign.slice(eqIdx + 1).trim();
+            if (expr === '?') {
+              row[col] = params[pIdx++];
+            } else if (/^'([^']*)'$/.test(expr)) {
+              row[col] = expr.slice(1, -1);
+            } else if (/^-?\d+$/.test(expr)) {
+              row[col] = Number(expr);
+            } else if (/^(\w+)\s*\+\s*(\d+)$/i.test(expr)) {
+              const em = expr.match(/^(\w+)\s*\+\s*(\d+)$/i)!;
+              row[col] = Number(row[em[1]] || 0) + Number(em[2]);
+            } else if (/^MAX\(0,\s*(\w+)\s*-\s*(\d+)\)$/i.test(expr)) {
+              const em = expr.match(/^MAX\(0,\s*(\w+)\s*-\s*(\d+)\)$/i)!;
+              row[col] = Math.max(0, Number(row[em[1]] || 0) - Number(em[2]));
+            } else if (/^CASE\s+WHEN\s+plan\s*=\s*'Free'\s+THEN\s*'Course'\s+ELSE\s+plan\s+END$/i.test(expr)) {
+              row[col] = row.plan === 'Free' ? 'Course' : row.plan;
+            }
+          }
+          changes++;
+        }
+        return { changes };
+      }
+
+      // 3. DELETE
+      const delMatch = cleanSql.match(/^DELETE\s+FROM\s+(\w+)(?:\s+WHERE\s+(.+))?$/i);
+      if (delMatch) {
+        const table = delMatch[1];
+        const whereClause = delMatch[2]?.trim();
+        const before = (this.tables[table] || []).length;
+        this.tables[table] = (this.tables[table] || []).filter(r => {
+          const ref = { idx: 0 };
+          return !this.matchesWhere(r, whereClause, params, ref);
+        });
+        return { changes: before - this.tables[table].length };
+      }
+
+      return { changes: 0 };
+    };
+
+    return {
+      run: (...params: any[]) => executeRun(params),
+      get: (...params: any[]) => executeSelect(params)[0],
+      all: (...params: any[]) => executeSelect(params),
+    };
+  }
+}
 
 function hashPwd(plain: string): string {
   const salt = crypto.randomBytes(16).toString('hex');
@@ -15,64 +286,42 @@ const SEED_DB_PATH = path.join(DATA_DIR, 'sri-lms.sqlite');
 
 declare global {
   // eslint-disable-next-line no-var
-  var __sriDb: DatabaseSync | undefined;
+  var __sriDb: SqliteDatabase | undefined;
 }
 
-function resolveWritableDbPath(): string {
-  const isServerless = !!process.env.VERCEL || !!process.env.AWS_LAMBDA_FUNCTION_NAME;
-  if (!isServerless) {
-    try {
-      if (!fs.existsSync(DATA_DIR)) {
-        fs.mkdirSync(DATA_DIR, { recursive: true });
-      }
-      fs.accessSync(DATA_DIR, fs.constants.W_OK);
-      return SEED_DB_PATH;
-    } catch {
-      // Directory is read-only; fall through to /tmp
-    }
-  }
-
-  const tmpDbPath = path.join(os.tmpdir(), 'sri-lms.sqlite');
-  try {
-    if (!fs.existsSync(tmpDbPath) && fs.existsSync(SEED_DB_PATH)) {
-      fs.copyFileSync(SEED_DB_PATH, tmpDbPath);
-      try {
-        fs.chmodSync(tmpDbPath, 0o666);
-      } catch {
-        // ignore chmod errors
-      }
-    }
-    return tmpDbPath;
-  } catch {
-    return ':memory:';
-  }
-}
-
-export function getDb(): DatabaseSync {
+export function getDb(): SqliteDatabase {
   if (!global.__sriDb) {
-    let db: DatabaseSync;
-    try {
-      const targetPath = resolveWritableDbPath();
-      db = new DatabaseSync(targetPath);
-      if (targetPath !== ':memory:') {
-        try {
-          db.exec('PRAGMA journal_mode = WAL;');
-        } catch {
-          // If WAL fails on the filesystem, continue with default journal mode
+    let db: SqliteDatabase | null = null;
+    const isServerless = !!process.env.VERCEL || !!process.env.AWS_LAMBDA_FUNCTION_NAME;
+
+    if (!isServerless) {
+      try {
+        if (!fs.existsSync(DATA_DIR)) {
+          fs.mkdirSync(DATA_DIR, { recursive: true });
         }
+        fs.accessSync(DATA_DIR, fs.constants.W_OK);
+        const nodeSqlite = eval('require')('node:sqlite');
+        const nativeDb = new nodeSqlite.DatabaseSync(SEED_DB_PATH);
+        nativeDb.exec('PRAGMA journal_mode = WAL;');
+        initSchemaAndSeed(nativeDb);
+        db = nativeDb;
+      } catch {
+        db = null;
       }
-      initSchemaAndSeed(db);
-    } catch {
-      // Ultimate fallback: pure in-memory SQLite database so serverless environments never crash
-      db = new DatabaseSync(':memory:');
-      initSchemaAndSeed(db);
     }
+
+    if (!db) {
+      const memDb = new InMemorySqliteDb();
+      initSchemaAndSeed(memDb);
+      db = memDb;
+    }
+
     global.__sriDb = db;
   }
   return global.__sriDb;
 }
 
-function initSchemaAndSeed(db: DatabaseSync) {
+function initSchemaAndSeed(db: SqliteDatabase) {
   db.exec(`
     CREATE TABLE IF NOT EXISTS categories (
       id TEXT PRIMARY KEY,
