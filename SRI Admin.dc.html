@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=DM+Serif+Display&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,0,0" rel="stylesheet">
+<style>
+body{margin:0;background:#F3F1EB;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#1446A0;text-decoration:none}
+a:hover{color:#0A2160;text-decoration:underline}
+input,select,button,textarea{font-family:inherit}
+</style>
+</helmet>
+<div style="min-height:100vh;display:flex;background:#F3F1EB;font-family:'Montserrat',sans-serif;color:#0E1736;font-size:14px;line-height:1.5">
+
+<sc-if value="{{ desktop }}" hint-placeholder-val="{{ true }}">
+  <aside style="width:244px;flex:none;background:#071A44;color:#fff;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:20px 14px">
+    <div style="display:flex;align-items:center;gap:10px;padding:0 8px 24px">
+      <img src="assets/sri-logo.png" alt="SRI" style="width:40px;height:40px;border-radius:50%">
+      <span style="display:flex;flex-direction:column;line-height:1.05"><span style="font-weight:800;font-size:18px">SRI</span><span style="font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#F2B22E">{{ roleLabel }}</span></span>
+    </div>
+    <nav style="display:flex;flex-direction:column;gap:4px">
+      <sc-for list="{{ nav }}" as="n" hint-placeholder-count="5">
+        <a href="{{ n.href }}" style="display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;font-weight:600;font-size:14px;color:{{ n.fg }};background:{{ n.bg }};text-decoration:none">
+          <span style="font-family:'Material Symbols Rounded';font-size:21px">{{ n.icon }}</span><span style="flex:1">{{ n.label }}</span>
+          <sc-if value="{{ n.hasBadge }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:800;background:#F2B22E;color:#071A44;border-radius:999px;padding:0 7px;line-height:18px">{{ n.badge }}</span></sc-if>
+        </a>
+      </sc-for>
+    </nav>
+    <div style="margin-top:auto;display:flex;align-items:center;gap:10px;padding:16px 8px 0;border-top:1px solid rgba(255,255,255,.1)">
+      <div style="width:36px;height:36px;border-radius:50%;background:#F2B22E;color:#071A44;display:grid;place-items:center;font-weight:800;font-size:13px">{{ initials }}</div>
+      <div style="display:flex;flex-direction:column;line-height:1.2"><span style="font-weight:700;font-size:13px">{{ userName }}</span><span style="font-size:11px;color:rgba(255,255,255,.6)">{{ roleLabel }}</span></div>
+    </div>
+  </aside>
+</sc-if>
+
+<main style="flex:1;min-width:0;padding-bottom:{{ mainPadB }}">
+  <div style="position:sticky;top:0;z-index:10;background:rgba(243,241,235,.92);backdrop-filter:blur(8px);border-bottom:1px solid #E4DFD3">
+    <div style="max-width:1320px;margin:0 auto;padding:12px clamp(16px,3vw,32px);display:flex;align-items:center;gap:12px">
+      <sc-if value="{{ mobile }}" hint-placeholder-val="{{ false }}"><img src="assets/sri-logo.png" alt="SRI" style="width:34px;height:34px;border-radius:50%"></sc-if>
+      <sc-if value="{{ desktop }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1;max-width:420px;display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #E4DFD3;border-radius:10px;padding:9px 12px;color:#8A90A6"><span style="font-family:'Material Symbols Rounded';font-size:20px">search</span>Search students, courses, submissions</div>
+      </sc-if>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+        <span style="font-size:12px;color:#5A6280;font-weight:600">View as</span>
+        <div style="display:flex;background:#E6E1D4;border-radius:999px;padding:3px">
+          <button onClick="{{ asAdmin }}" style="border:0;border-radius:999px;padding:7px 14px;font-weight:700;font-size:12px;cursor:pointer;background:{{ rbA }};color:{{ rfA }}">Admin</button>
+          <button onClick="{{ asCo }}" style="border:0;border-radius:999px;padding:7px 14px;font-weight:700;font-size:12px;cursor:pointer;background:{{ rbC }};color:{{ rfC }}">Co-admin</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="max-width:1320px;margin:0 auto;padding:clamp(18px,3vw,32px)">
+
+  <sc-if value="{{ isDash }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-direction:column;gap:24px">
+      <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px">
+        <div>
+          <h1 style="font-family:'DM Serif Display',serif;font-weight:400;font-size:clamp(28px,3.6vw,40px);margin:0;line-height:1.1">Overview</h1>
+          <div style="color:#5A6280">October 2026</div>
+        </div>
+        <a href="#builder" style="background:#071A44;color:#fff;border-radius:999px;padding:11px 18px;font-weight:700;text-decoration:none;display:flex;align-items:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:19px">add</span>New course</a>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:14px">
+        <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+          <div style="background:{{ k.bg }};color:{{ k.fg }};border:1px solid {{ k.bd }};border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:6px">
+            <span style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;opacity:.75">{{ k.t }}</span>
+            <span style="font-weight:800;font-size:30px;line-height:1.1">{{ k.v }}</span>
+            <span style="font-size:12px;opacity:.75">{{ k.d }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:stretch">
+        <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ true }}">
+          <div style="flex:2 1 460px;min-width:0;background:#fff;border:1px solid #E4DFD3;border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:16px">
+            <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-weight:700;font-size:16px">Revenue, last 8 weeks</span><a href="#payments" style="font-size:13px;font-weight:700">Payments</a></div>
+            <div style="display:flex;align-items:flex-end;gap:10px;height:180px">
+              <sc-for list="{{ bars }}" as="b" hint-placeholder-count="8">
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end">
+                  <span style="font-size:11px;color:#5A6280;font-weight:600">{{ b.v }}</span>
+                  <div style="width:100%;max-width:44px;height:{{ b.h }};background:{{ b.c }};border-radius:6px 6px 2px 2px"></div>
+                  <span style="font-size:11px;color:#8A90A6">{{ b.l }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+        <div style="flex:1 1 320px;min-width:0;background:#fff;border:1px solid #E4DFD3;border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-weight:700;font-size:16px">{{ queueTitle }}</span><a href="#review" style="font-size:13px;font-weight:700">Open queue</a></div>
+          <sc-for list="{{ queuePreview }}" as="q" hint-placeholder-count="3">
+            <a href="#review" style="display:flex;flex-direction:column;gap:4px;padding:12px;border-radius:12px;background:#F6F3EC;color:#0E1736;text-decoration:none">
+              <span style="font-weight:600;font-size:13px;line-height:1.35">{{ q.t }}</span>
+              <span style="font-size:12px;color:#5A6280">{{ q.a }} · {{ q.when }}</span>
+            </a>
+          </sc-for>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid #E4DFD3;border-radius:18px;overflow:hidden">
+        <div style="padding:18px 22px;font-weight:700;font-size:16px;border-bottom:1px solid #EEEAE0">Recent enrollments</div>
+        <div style="overflow-x:auto">
+          <div style="min-width:620px">
+            <div style="display:grid;grid-template-columns:1.4fr 1.8fr 1fr 1fr;gap:12px;padding:10px 22px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#8A90A6">
+              <span>Student</span><span>Course</span><span>Plan</span><span>{{ amountCol }}</span>
+            </div>
+            <sc-for list="{{ enrolls }}" as="e" hint-placeholder-count="5">
+              <div style="display:grid;grid-template-columns:1.4fr 1.8fr 1fr 1fr;gap:12px;padding:12px 22px;border-top:1px solid #F0ECE2;align-items:center">
+                <span style="display:flex;align-items:center;gap:10px;font-weight:600"><span style="width:30px;height:30px;border-radius:50%;background:#DCE7F8;color:#0A2160;display:grid;place-items:center;font-size:11px;font-weight:800">{{ e.i }}</span>{{ e.n }}</span>
+                <span style="color:#3A4260">{{ e.c }}</span>
+                <span><span style="font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;background:{{ e.pb }};color:{{ e.pf }}">{{ e.p }}</span></span>
+                <span style="font-weight:600">{{ e.amt }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isBuilder }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:22px">
+      <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px">
+        <div>
+          <div style="font-size:13px;color:#5A6280"><a href="#courses">Courses</a> / Edit · click a topic to open it</div>
+          <h1 style="font-family:'DM Serif Display',serif;font-weight:400;font-size:clamp(26px,3.4vw,38px);margin:2px 0 0;line-height:1.1">Research Methodology Foundations</h1>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ true }}">
+            <button style="border:1.5px solid #E8C4BC;background:#fff;color:#C2412D;border-radius:999px;padding:10px 16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:18px">delete</span>Delete</button>
+          </sc-if>
+          <button style="border:1.5px solid #D3CDBF;background:#fff;border-radius:999px;padding:10px 16px;font-weight:700;cursor:pointer;color:#0E1736">Preview</button>
+          <button onClick="{{ publish }}" style="border:0;background:#F2B22E;color:#071A44;border-radius:999px;padding:11px 20px;font-weight:800;cursor:pointer">{{ publishLabel }}</button>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
+        <div style="flex:2 1 520px;min-width:0;display:flex;flex-direction:column;gap:14px">
+          <sc-for list="{{ bmods }}" as="m" hint-placeholder-count="3">
+            <div style="background:#fff;border:1px solid #E4DFD3;border-radius:16px;overflow:hidden">
+              <a href="{{ m.href }}" style="display:flex;align-items:center;gap:10px;padding:14px 16px;background:#FAF8F3;border-bottom:1px solid #EEEAE0;color:#0E1736;text-decoration:none">
+                <span style="font-family:'Material Symbols Rounded';font-size:20px;color:#B5B0A2;cursor:grab">drag_indicator</span>
+                <span style="font-weight:800;color:#F2B22E">{{ m.n }}</span>
+                <span style="flex:1;font-weight:700">{{ m.t }}</span>
+                <span style="font-size:12px;color:#5A6280">{{ m.count }}</span>
+                <span style="display:flex;align-items:center;gap:2px;font-size:12px;font-weight:700;color:#1446A0">Open<span style="font-family:'Material Symbols Rounded';font-size:18px">chevron_right</span></span>
+              </a>
+              <sc-for list="{{ m.items }}" as="l" hint-placeholder-count="3">
+                <a href="{{ l.href }}" style="display:flex;align-items:center;gap:12px;padding:11px 16px;border-top:1px solid #F3F0E8;color:#0E1736;text-decoration:none">
+                  <span style="font-family:'Material Symbols Rounded';font-size:18px;color:#C9C4B6">drag_indicator</span>
+                  <span style="width:32px;height:32px;border-radius:8px;background:{{ l.bg }};color:{{ l.fg }};display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:18px">{{ l.icon }}</span>
+                  <span style="flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.3"><span style="font-weight:600">{{ l.t }}</span><span style="font-size:12px;color:#8A90A6">{{ l.d }}</span></span>
+                  <span style="font-size:11px;font-weight:700;color:{{ l.fc }}">{{ l.free }}</span>
+                  <span style="font-family:'Material Symbols Rounded';font-size:20px;color:#8A90A6">edit</span>
+                </a>
+              </sc-for>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;padding:12px 16px;border-top:1px solid #F3F0E8">
+                <button onClick="{{ m.addVideo }}" style="border:1px dashed #B9C6E2;background:#F4F7FD;border-radius:999px;padding:7px 12px;font-weight:700;font-size:12px;color:#1446A0;cursor:pointer;display:flex;align-items:center;gap:4px"><span style="font-family:'Material Symbols Rounded';font-size:16px">add</span>Video</button>
+                <button onClick="{{ m.addPdf }}" style="border:1px dashed #E8C4BC;background:#FDF5F3;border-radius:999px;padding:7px 12px;font-weight:700;font-size:12px;color:#C2412D;cursor:pointer;display:flex;align-items:center;gap:4px"><span style="font-family:'Material Symbols Rounded';font-size:16px">add</span>PDF / file</button>
+                <button onClick="{{ m.addQuiz }}" style="border:1px dashed #E5CF95;background:#FDF8EA;border-radius:999px;padding:7px 12px;font-weight:700;font-size:12px;color:#8C6206;cursor:pointer;display:flex;align-items:center;gap:4px"><span style="font-family:'Material Symbols Rounded';font-size:16px">add</span>Quiz</button>
+              </div>
+            </div>
+          </sc-for>
+          <button onClick="{{ addModule }}" style="border:2px dashed #D3CDBF;background:transparent;border-radius:16px;padding:16px;font-weight:700;color:#5A6280;cursor:pointer">+ Add module</button>
+        </div>
+        <div style="flex:1 1 300px;min-width:0;display:flex;flex-direction:column;gap:14px">
+          <div style="background:#fff;border:1px solid #E4DFD3;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px">
+            <div style="font-weight:700">Details</div>
+            <div style="aspect-ratio:16/9;border-radius:10px;background:repeating-linear-gradient(135deg,#E9EEF7 0 10px,#DDE5F2 10px 20px);display:grid;place-items:center"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#5A6B90">drop cover image</span></div>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#5A6280">Category<select style="border:1px solid #D8D3C6;border-radius:10px;padding:10px;font-size:14px;background:#fff"><sc-for list="{{ catOptions }}" as="o" hint-placeholder-count="4"><option>{{ o.name }}</option></sc-for></select><a href="#courses" style="font-size:12px;font-weight:700">Manage categories</a></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#5A6280">Instructor<input value="Dr. Toka Essam Samir" style="border:1px solid #D8D3C6;border-radius:10px;padding:10px;font-size:14px"></label>
+          </div>
+          <div style="background:#fff;border:1px solid #E4DFD3;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px">
+            <div style="font-weight:700">Pricing</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#5A6280">One-time (EGP)<input value="450" style="border:1px solid #D8D3C6;border-radius:10px;padding:10px;font-size:14px;min-width:0"></label>
+              <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#5A6280">Access<select style="border:1px solid #D8D3C6;border-radius:10px;padding:10px;font-size:14px;background:#fff;min-width:0"><option>Lifetime</option><option>12 months</option></select></label>
+            </div>
+            <button onClick="{{ toggleMember }}" style="display:flex;align-items:center;gap:10px;background:none;border:0;padding:0;cursor:pointer;color:#0E1736;font-size:13px;font-weight:600;text-align:left">
+              <span style="width:38px;height:22px;border-radius:99px;background:{{ memBg }};position:relative;flex:none"><span style="position:absolute;top:3px;left:{{ memX }};width:16px;height:16px;border-radius:50%;background:#fff"></span></span>
+              Included in SRI Membership
+            </button>
+            <div style="font-size:12px;color:#5A6280">Pass mark for certificate: 70% on every quiz</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isReview }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div>
+        <h1 style="font-family:'DM Serif Display',serif;font-weight:400;font-size:clamp(28px,3.6vw,40px);margin:0;line-height:1.1">Research review</h1>
+        <div style="color:#5A6280">{{ reviewSub }}</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <sc-for list="{{ filters }}" as="f" hint-placeholder-count="4">
+          <button onClick="{{ f.pick }}" style="border:1.5px solid {{ f.bd }};background:{{ f.bg }};color:{{ f.fg }};border-radius:999px;padding:7px 14px;font-weight:700;font-size:12px;cursor:pointer">{{ f.label }} · {{ f.n }}</button>
+        </sc-for>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:18px;align-items:flex-start">
+        <div style="flex:1 1 340px;min-width:0;display:flex;flex-direction:column;gap:8px">
+          <sc-for list="{{ queue }}" as="q" hint-placeholder-count="5">
+            <button onClick="{{ q.pick }}" style="text-align:left;background:#fff;border:2px solid {{ q.bd }};border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px;cursor:pointer;color:#0E1736">
+              <div style="display:flex;gap:10px;justify-content:space-between;align-items:flex-start">
+                <span style="font-weight:700;font-size:14px;line-height:1.35">{{ q.t }}</span>
+                <span style="flex:none;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:{{ q.sb }};color:{{ q.sc }}">{{ q.stage }}</span>
+              </div>
+              <span style="font-size:12px;color:#5A6280">{{ q.a }} · {{ q.type }} · {{ q.when }}</span>
+            </button>
+          </sc-for>
+        </div>
+        <div style="flex:1.6 1 440px;min-width:0;background:#fff;border:1px solid #E4DFD3;border-radius:18px;overflow:hidden;display:flex;flex-direction:column">
+          <div style="padding:20px 22px;border-bottom:1px solid #EEEAE0;display:flex;flex-direction:column;gap:8px">
+            <span style="align-self:flex-start;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:{{ cur.sb }};color:{{ cur.sc }}">{{ cur.stage }}</span>
+            <div style="font-weight:800;font-size:19px;line-height:1.3">{{ cur.t }}</div>
+            <div style="font-size:13px;color:#5A6280">{{ cur.a }} · Supervisor: {{ cur.sup }} · {{ cur.type }}</div>
+          </div>
+          <div style="padding:18px 22px;display:flex;flex-direction:column;gap:16px">
+            <div style="display:flex;align-items:center;gap:12px;background:#F6F3EC;border-radius:12px;padding:12px">
+              <span style="width:42px;height:42px;border-radius:10px;background:#FBE7E3;color:#C2412D;display:grid;place-items:center;font-size:11px;font-weight:800">PDF</span>
+              <span style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-weight:600">{{ cur.file }}</span><span style="font-size:12px;color:#5A6280">14 pages · uploaded {{ cur.when }}</span></span>
+              <button style="border:0;background:#071A44;color:#fff;border-radius:999px;padding:8px 14px;font-weight:700;font-size:12px;cursor:pointer">Open</button>
+            </div>
+            <div style="aspect-ratio:4/3;max-height:280px;width:100%;border:1px solid #E4DFD3;border-radius:12px;background:repeating-linear-gradient(0deg,#fff 0 18px,#F3F1EB 18px 19px);display:grid;place-items:center"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8A90A6">manuscript preview</span></div>
+            <div>
+              <div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#8A90A6;margin-bottom:6px">Abstract</div>
+              <div style="color:#3A4260;font-size:14px">{{ cur.abs }}</div>
+            </div>
+            <sc-for list="{{ cur.notes }}" as="n" hint-placeholder-count="1">
+              <div style="border:1px solid #CFE6D9;background:#F1F9F4;border-radius:12px;padding:12px;font-size:13px;display:flex;flex-direction:column;gap:2px">
+                <span style="font-weight:700">{{ n.who }}</span><span style="color:#3A4260">{{ n.text }}</span>
+              </div>
+            </sc-for>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#5A6280">Comments for the student<textarea rows="3" placeholder="What should they change, or why is it approved?" style="border:1px solid #D8D3C6;border-radius:10px;padding:12px;font-size:14px;resize:vertical"></textarea></label>
+            <sc-if value="{{ canAct }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-wrap:wrap;gap:8px">
+                <button onClick="{{ decideNo }}" style="border:1.5px solid #E8C4BC;background:#fff;color:#C2412D;border-radius:999px;padding:11px 18px;font-weight:700;cursor:pointer">{{ noLabel }}</button>
+                <button onClick="{{ decideYes }}" style="border:0;background:{{ yesBg }};color:{{ yesFg }};border-radius:999px;padding:12px 20px;font-weight:800;cursor:pointer;margin-left:auto">{{ yesLabel }}</button>
+              </div>
+            </sc-if>
+            <sc-if value="{{ cantAct }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;gap:8px;align-items:center;font-size:13px;color:#5A6280;background:#F6F3EC;border-radius:10px;padding:12px"><span style="font-family:'Material Symbols Rounded';font-size:18px">info</span>{{ cantMsg }}</div>
+            </sc-if>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isPayments }}" hint-placeholder-val="{{ false }}">
+    <sc-if value="{{ isCo }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff;border:1px solid #E4DFD3;border-radius:18px;padding:48px 24px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center">
+        <span style="font-family:'Material Symbols Rounded';font-size:40px;color:#8A90A6">lock</span>
+        <div style="font-weight:800;font-size:18px">Admins only</div>
+        <div style="color:#5A6280;max-width:360px">Revenue and payments aren't shared with co-admins.</div>
+        <a href="#dashboard" style="font-weight:700;margin-top:6px">Back to overview</a>
+      </div>
+    </sc-if>
+    <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;flex-direction:column;gap:22px">
+        <h1 style="font-family:'DM Serif Display',serif;font-weight:400;font-size:clamp(28px,3.6vw,40px);margin:0;line-height:1.1">Payments &amp; coupons</h1>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:14px">
+          <sc-for list="{{ payKpis }}" as="k" hint-placeholder-count="4">
+            <div style="background:#fff;border:1px solid #E4DFD3;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:4px">
+              <span style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#5A6280">{{ k.t }}</span>
+              <span style="font-weight:800;font-size:26px;color:#0A2160">{{ k.v }}</span>
+              <span style="font-size:12px;color:#5A6280">{{ k.d }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
+          <div style="flex:2 1 520px;min-width:0;background:#fff;border:1px solid #E4DFD3;border-radius:18px;overflow:hidden">
+            <div style="padding:16px 20px;font-weight:700;font-size:16px;border-bottom:1px solid #EEEAE0">Transactions</div>
+            <div style="overflow-x:auto"><div style="min-width:600px">
+              <sc-for list="{{ txns }}" as="t" hint-placeholder-count="6">
+                <div style="display:grid;grid-template-columns:1.3fr 1.5fr 1fr .9fr 1fr;gap:10px;padding:12px 20px;border-top:1px solid #F0ECE2;align-items:center">
+                  <span style="font-weight:600">{{ t.n }}</span>
+                  <span style="color:#3A4260">{{ t.item }}</span>
+                  <span style="color:#5A6280;font-size:13px">{{ t.m }}</span>
+                  <span style="font-weight:700">{{ t.amt }}</span>
+                  <span style="display:flex;gap:6px;align-items:center;justify-content:flex-end">
+                    <span style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:{{ t.sb }};color:{{ t.sc }}">{{ t.s }}</span>
+                    <sc-if value="{{ t.verify }}" hint-placeholder-val="{{ false }}"><button onClick="{{ t.doVerify }}" style="border:0;background:#071A44;color:#fff;border-radius:999px;padding:4px 10px;font-weight:700;font-size:11px;cursor:pointer">Verify</button></sc-if>
+                  </span>
+                </div>
+              </sc-for>
+            </div></div>
+          </div>
+          <div style="flex:1 1 300px;min-width:0;display:flex;flex-direction:column;gap:14px">
+            <div style="background:#fff;border:1px solid #E4DFD3;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-weight:700">Coupons</span><button style="border:0;background:#EFE6CF;color:#0A2160;border-radius:999px;padding:6px 12px;font-weight:700;font-size:12px;cursor:pointer">+ New</button></div>
+              <sc-for list="{{ coupons }}" as="c" hint-placeholder-count="3">
+                <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px dashed #D3CDBF;border-radius:10px">
+                  <span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:#0A2160">{{ c.code }}</span>
+                  <span style="flex:1;font-size:12px;color:#5A6280">{{ c.d }}</span>
+                  <span style="font-size:12px;font-weight:700">{{ c.used }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="background:#fff;border:1px solid #E4DFD3;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:10px">
+              <div style="font-weight:700">Payment gateways</div>
+              <sc-for list="{{ gateways }}" as="g" hint-placeholder-count="4">
+                <div style="display:flex;align-items:center;gap:10px;font-size:13px">
+                  <span style="width:8px;height:8px;border-radius:50%;background:{{ g.c }}"></span>
+                  <span style="flex:1;font-weight:600">{{ g.t }}</span>
+                  <span style="color:#5A6280">{{ g.s }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+  </sc-if>
+
+  <sc-if value="{{ isCourses }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px">
+        <h1 style="font-family:'DM Serif Display',serif;font-weight:400;font-size:clamp(28px,3.6vw,40px);margin:0;line-height:1.1">Courses &amp; categories</h1>
+        <a href="#builder" style="background:#071A44;color:#fff;border-radius:999px;padding:11px 18px;font-weight:700;text-decoration:none;display:flex;align-items:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:19px">add</span>New course</a>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
+        <div style="flex:2 1 520px;min-width:0;background:#fff;border:1px solid #E4DFD3;border-radius:18px;overflow:hidden">
+          <sc-for list="{{ coursesList }}" as="c" hint-placeholder-count="6">
+            <a href="#builder" style="display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;padding:14px 18px;border-top:1px solid #F0ECE2;color:#0E1736;text-decoration:none">
+              <div style="width:72px;height:44px;flex:none;border-radius:8px;background:repeating-linear-gradient(135deg,#E9EEF7 0 6px,#DDE5F2 6px 12px)"></div>
+              <div style="flex:1 1 220px;min-width:0;display:flex;flex-direction:column;line-height:1.3"><span style="font-weight:700">{{ c.t }}</span><span style="font-size:12px;color:#5A6280">{{ c.cat }} · {{ c.les }} · {{ c.stu }}</span></div>
+              <span style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:{{ c.sb }};color:{{ c.sc }}">{{ c.st }}</span>
+              <span style="font-family:'Material Symbols Rounded';font-size:20px;color:#8A90A6">chevron_right</span>
+            </a>
+          </sc-for>
+        </div>
+        <div style="flex:1 1 300px;min-width:0;background:#fff;border:1px solid #E4DFD3;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:10px">
+          <div style="font-weight:700;font-size:16px">Categories</div>
+          <div style="font-size:12px;color:#5A6280;margin-top:-6px">Click a name to rename it.</div>
+          <sc-for list="{{ catRows }}" as="k" hint-placeholder-count="4">
+            <div style="display:flex;align-items:center;gap:8px;border:1px solid #E4DFD3;border-radius:10px;padding:4px 6px 4px 10px">
+              <span style="font-family:'Material Symbols Rounded';font-size:18px;color:#1446A0">label</span>
+              <input value="{{ k.name }}" onChange="{{ k.set }}" style="flex:1;min-width:0;border:0;padding:8px 4px;font-size:14px;font-weight:600;background:transparent;color:#0E1736">
+              <span style="font-size:12px;color:#5A6280;white-space:nowrap">{{ k.n }}</span>
+              <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ true }}"><button onClick="{{ k.remove }}" style="border:0;background:none;width:32px;height:32px;display:grid;place-items:center;cursor:pointer;color:#C2412D"><span style="font-family:'Material Symbols Rounded';font-size:19px">delete</span></button></sc-if>
+            </div>
+          </sc-for>
+          <div style="display:flex;gap:8px;margin-top:4px">
+            <input value="{{ newCat }}" onChange="{{ setNewCat }}" placeholder="New category name" style="flex:1;min-width:0;border:1px solid #D8D3C6;border-radius:10px;padding:11px;font-size:14px">
+            <button onClick="{{ addCat }}" style="border:0;background:#F2B22E;color:#071A44;border-radius:10px;padding:0 16px;font-weight:800;cursor:pointer">Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isTopic }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px">
+        <div style="font-size:13px;color:#5A6280;display:flex;flex-wrap:wrap;gap:6px;align-items:center"><a href="#courses">Courses</a><span>/</span><a href="#builder">Research Methodology Foundations</a><span>/</span><span>Topic {{ topicN }}</span></div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <a href="{{ prevTopic }}" style="width:38px;height:38px;border-radius:50%;border:1.5px solid #D3CDBF;background:#fff;display:grid;place-items:center;color:#0E1736;text-decoration:none"><span style="font-family:'Material Symbols Rounded';font-size:20px">chevron_left</span></a>
+          <span style="font-size:12px;font-weight:700;color:#5A6280">{{ topicPos }}</span>
+          <a href="{{ nextTopic }}" style="width:38px;height:38px;border-radius:50%;border:1.5px solid #D3CDBF;background:#fff;display:grid;place-items:center;color:#0E1736;text-decoration:none"><span style="font-family:'Material Symbols Rounded';font-size:20px">chevron_right</span></a>
+        </div>
+      </div>
+      <div style="background:#071A44;color:#fff;border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="font-weight:900;font-size:28px;color:#F2B22E">{{ topicN }}</span><span style="font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#4BB4EC">Topic · {{ topicCount }}</span></div>
+        <input value="{{ topicTitle }}" onChange="{{ setTopicTitle }}" placeholder="Topic title" style="border:0;border-bottom:1.5px solid rgba(255,255,255,.2);background:transparent;color:#fff;font-family:'DM Serif Display',serif;font-size:clamp(24px,3vw,34px);padding:4px 0 8px;width:100%">
+        <textarea rows="2" onChange="{{ setTopicDesc }}" value="{{ topicDesc }}" placeholder="What will students learn in this topic?" style="border:0;background:rgba(255,255,255,.06);border-radius:10px;color:rgba(255,255,255,.85);font-size:14px;padding:10px 12px;resize:vertical"></textarea>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
+        <div style="flex:1 1 320px;min-width:0;display:flex;flex-direction:column;gap:8px">
+          <div style="font-weight:700;font-size:15px">Lessons</div>
+          <sc-for list="{{ tItems }}" as="l" hint-placeholder-count="4">
+            <div style="display:flex;align-items:center;gap:10px;background:{{ l.bg }};border:2px solid {{ l.bd }};border-radius:12px;padding:8px 8px 8px 12px">
+              <button onClick="{{ l.pick }}" style="flex:1;min-width:0;display:flex;align-items:center;gap:10px;border:0;background:none;padding:0;cursor:pointer;text-align:left;color:#0E1736">
+                <span style="width:32px;height:32px;flex:none;border-radius:8px;background:{{ l.ibg }};color:{{ l.fg }};display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:18px">{{ l.icon }}</span>
+                <span style="min-width:0;display:flex;flex-direction:column;line-height:1.3"><span style="font-weight:600;font-size:14px">{{ l.t }}</span><span style="font-size:12px;color:#8A90A6">{{ l.d }}</span></span>
+              </button>
+              <div style="display:flex;flex-direction:column">
+                <button onClick="{{ l.up }}" style="border:0;background:none;width:28px;height:20px;cursor:pointer;color:#8A90A6;display:grid;place-items:center"><span style="font-family:'Material Symbols Rounded';font-size:18px">expand_less</span></button>
+                <button onClick="{{ l.down }}" style="border:0;background:none;width:28px;height:20px;cursor:pointer;color:#8A90A6;display:grid;place-items:center"><span style="font-family:'Material Symbols Rounded';font-size:18px">expand_more</span></button>
+              </div>
+            </div>
+          </sc-for>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">
+            <button onClick="{{ tAddVideo }}" style="border:1px dashed #B9C6E2;background:#F4F7FD;border-radius:999px;padding:9px 14px;font-weight:700;font-size:12px;color:#1446A0;cursor:pointer">+ Video</button>
+            <button onClick="{{ tAddPdf }}" style="border:1px dashed #E8C4BC;background:#FDF5F3;border-radius:999px;padding:9px 14px;font-weight:700;font-size:12px;color:#C2412D;cursor:pointer">+ PDF / file</button>
+            <button onClick="{{ tAddQuiz }}" style="border:1px dashed #E5CF95;background:#FDF8EA;border-radius:999px;padding:9px 14px;font-weight:700;font-size:12px;color:#8C6206;cursor:pointer">+ Quiz</button>
+          </div>
+          <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ true }}">
+            <button onClick="{{ deleteTopic }}" style="align-self:flex-start;margin-top:12px;border:0;background:none;color:#C2412D;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:4px;padding:0"><span style="font-family:'Material Symbols Rounded';font-size:18px">delete</span>Delete this topic</button>
+          </sc-if>
+        </div>
+        <div style="flex:2 1 460px;min-width:0;background:#fff;border:1px solid #E4DFD3;border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:16px">
+          <sc-if value="{{ noLesson }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:40px 10px;text-align:center;color:#5A6280">This topic is empty. Add a video, a PDF or a quiz to start.</div>
+          </sc-if>
+          <sc-if value="{{ hasLesson }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="width:36px;height:36px;border-radius:9px;background:{{ les.bg }};color:{{ les.fg }};display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:20px">{{ les.icon }}</span>
+              <span style="font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#5A6280">{{ les.typeLabel }}</span>
+              <button onClick="{{ removeLes }}" style="margin-left:auto;border:1.5px solid #E8C4BC;background:#fff;color:#C2412D;border-radius:999px;padding:7px 12px;font-weight:700;font-size:12px;cursor:pointer">Remove</button>
+            </div>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#5A6280">Title<input value="{{ les.t }}" onChange="{{ setLesTitle }}" style="border:1px solid #D8D3C6;border-radius:10px;padding:12px;font-size:15px;color:#0E1736"></label>
+
+            <sc-if value="{{ lesVideoUp }}" hint-placeholder-val="{{ false }}">
+              <div style="aspect-ratio:16/9;background:#050F2A;border-radius:14px;position:relative;display:grid;place-items:center;background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.03) 0 12px,transparent 12px 24px)">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,.45);position:absolute;top:12px;left:14px">video preview</span>
+                <span style="width:60px;height:60px;border-radius:50%;background:#F2B22E;display:grid;place-items:center"><span style="font-family:'Material Symbols Rounded';font-size:34px;color:#071A44">play_arrow</span></span>
+                <span style="position:absolute;right:12px;bottom:10px;font-size:12px;font-weight:700;color:#fff;background:rgba(0,0,0,.5);padding:2px 8px;border-radius:6px">{{ les.d }}</span>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px">
+                <button onClick="{{ uploadLes }}" style="border:1.5px solid #D3CDBF;background:#fff;border-radius:999px;padding:9px 14px;font-weight:700;font-size:12px;cursor:pointer;color:#0E1736">Replace video</button>
+                <button style="border:1.5px solid #D3CDBF;background:#fff;border-radius:999px;padding:9px 14px;font-weight:700;font-size:12px;cursor:pointer;color:#0E1736">Add subtitles (.srt)</button>
+                <button style="border:1.5px solid #D3CDBF;background:#fff;border-radius:999px;padding:9px 14px;font-weight:700;font-size:12px;cursor:pointer;color:#0E1736">Attach slides PDF</button>
+              </div>
+            </sc-if>
+            <sc-if value="{{ lesVideoNone }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ uploadLes }}" style="aspect-ratio:16/9;border:2px dashed #B9C6E2;background:#F4F7FD;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;color:#0E1736;width:100%">
+                <span style="font-family:'Material Symbols Rounded';font-size:40px;color:#1446A0">upload</span>
+                <span style="font-weight:700">Upload video</span>
+                <span style="font-size:12px;color:#5A6280">MP4 or MOV, up to 2 GB</span>
+              </button>
+            </sc-if>
+            <sc-if value="{{ lesPdfUp }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;align-items:center;gap:12px;background:#F6F3EC;border-radius:12px;padding:12px">
+                <span style="width:42px;height:42px;border-radius:10px;background:#FBE7E3;color:#C2412D;display:grid;place-items:center;font-size:11px;font-weight:800">PDF</span>
+                <span style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-weight:600">{{ les.t }}.pdf</span><span style="font-size:12px;color:#5A6280">{{ les.d }} · students can download</span></span>
+                <button onClick="{{ uploadLes }}" style="border:1.5px solid #D3CDBF;background:#fff;border-radius:999px;padding:8px 12px;font-weight:700;font-size:12px;cursor:pointer;color:#0E1736">Replace</button>
+              </div>
+              <div style="aspect-ratio:4/3;max-height:300px;border:1px solid #E4DFD3;border-radius:12px;background:repeating-linear-gradient(0deg,#fff 0 18px,#F3F1EB 18px 19px);display:grid;place-items:center"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8A90A6">pdf preview</span></div>
+            </sc-if>
+            <sc-if value="{{ lesPdfNone }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ uploadLes }}" style="border:2px dashed #E8C4BC;background:#FDF5F3;border-radius:14px;padding:36px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;color:#0E1736;width:100%">
+                <span style="font-family:'Material Symbols Rounded';font-size:36px;color:#C2412D">upload_file</span>
+                <span style="font-weight:700">Upload PDF or file</span>
+                <span style="font-size:12px;color:#5A6280">PDF, DOCX, PPTX, XLSX up to 50 MB</span>
+              </button>
+            </sc-if>
+            <sc-if value="{{ lesQuiz }}" hint-placeholder-val="{{ false }}">
+              <div style="background:#FDF8EA;border:1px solid #F1E2B8;border-radius:14px;padding:18px;display:flex;flex-wrap:wrap;align-items:center;gap:14px">
+                <div style="flex:1 1 200px;display:flex;flex-direction:column"><span style="font-weight:800;font-size:18px">{{ lesQCount }}</span><span style="font-size:13px;color:#5A6280">Pass mark 70% · 15 min · unlimited attempts</span></div>
+                <button onClick="{{ editQuiz }}" style="border:0;background:#071A44;color:#fff;border-radius:999px;padding:11px 18px;font-weight:700;cursor:pointer">Edit questions</button>
+              </div>
+            </sc-if>
+            <button onClick="{{ toggleLesFree }}" style="display:flex;align-items:center;gap:10px;background:none;border:0;padding:0;cursor:pointer;color:#0E1736;font-size:13px;font-weight:600;text-align:left">
+              <span style="width:38px;height:22px;border-radius:99px;background:{{ lesFreeBg }};position:relative;flex:none"><span style="position:absolute;top:3px;left:{{ lesFreeX }};width:16px;height:16px;border-radius:50%;background:#fff"></span></span>
+              Free preview: visitors can watch this without buying
+            </button>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isLibrary }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div>
+        <h1 style="font-family:'DM Serif Display',serif;font-weight:400;font-size:clamp(28px,3.6vw,40px);margin:0;line-height:1.1">Media library</h1>
+        <div style="color:#5A6280">Every video and file across your courses. Add new ones from inside a topic.</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <sc-for list="{{ mediaTabs }}" as="t" hint-placeholder-count="2">
+          <button onClick="{{ t.pick }}" style="border:1.5px solid {{ t.bd }};background:{{ t.bg }};color:{{ t.fg }};border-radius:999px;padding:8px 16px;font-weight:700;font-size:13px;cursor:pointer">{{ t.label }}</button>
+        </sc-for>
+      </div>
+      <div style="display:flex;flex-wrap:wrap-reverse;gap:20px;align-items:flex-start">
+        <div style="flex:1.4 1 420px;min-width:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr));gap:12px">
+          <sc-for list="{{ mediaItems }}" as="m" hint-placeholder-count="6">
+            <button onClick="{{ m.pick }}" style="text-align:left;background:#fff;border:2px solid {{ m.bd }};border-radius:14px;overflow:hidden;padding:0;cursor:pointer;color:#0E1736;display:flex;flex-direction:column">
+              <div style="aspect-ratio:16/9;width:100%;background:{{ m.tb }};display:grid;place-items:center"><span style="font-family:'Material Symbols Rounded';font-size:32px;color:{{ m.tf }}">{{ m.icon }}</span></div>
+              <div style="padding:10px 12px 12px;display:flex;flex-direction:column;gap:2px">
+                <span style="font-weight:700;font-size:13px;line-height:1.3">{{ m.t }}</span>
+                <span style="font-size:11px;color:#5A6280">{{ m.sub }}</span>
+                <span style="font-size:11px;font-weight:700;color:{{ m.mc }}">{{ m.meta }}</span>
+              </div>
+            </button>
+          </sc-for>
+        </div>
+        <sc-if value="{{ hasMedia }}" hint-placeholder-val="{{ true }}">
+          <div style="flex:1 1 340px;min-width:0;background:#fff;border:1px solid #E4DFD3;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px;position:sticky;top:80px">
+            <sc-if value="{{ mIsVid }}" hint-placeholder-val="{{ true }}">
+              <div style="aspect-ratio:16/9;background:#050F2A;border-radius:12px;display:grid;place-items:center;position:relative"><span style="width:54px;height:54px;border-radius:50%;background:#F2B22E;display:grid;place-items:center"><span style="font-family:'Material Symbols Rounded';font-size:30px;color:#071A44">play_arrow</span></span><span style="position:absolute;top:10px;left:12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,.45)">video player</span></div>
+            </sc-if>
+            <sc-if value="{{ mIsPdf }}" hint-placeholder-val="{{ false }}">
+              <div style="aspect-ratio:4/3;border:1px solid #E4DFD3;border-radius:12px;background:repeating-linear-gradient(0deg,#fff 0 18px,#F3F1EB 18px 19px);display:grid;place-items:center"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8A90A6">pdf viewer</span></div>
+            </sc-if>
+            <div style="font-weight:800;font-size:17px;line-height:1.3">{{ mPrev.t }}</div>
+            <div style="font-size:13px;color:#5A6280">{{ mPrev.sub }} · {{ mPrev.meta }}</div>
+            <a href="{{ mPrev.href }}" style="align-self:flex-start;background:#071A44;color:#fff;border-radius:999px;padding:10px 16px;font-weight:700;font-size:13px;text-decoration:none">Open topic to edit</a>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isQuizzes }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div>
+        <h1 style="font-family:'DM Serif Display',serif;font-weight:400;font-size:clamp(28px,3.6vw,40px);margin:0;line-height:1.1">Quizzes</h1>
+        <div style="color:#5A6280">Write questions, mark the right answer, and see how students scored.</div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
+        <div style="flex:1 1 280px;min-width:0;display:flex;flex-direction:column;gap:8px">
+          <sc-for list="{{ quizzes }}" as="q" hint-placeholder-count="2">
+            <button onClick="{{ q.pick }}" style="text-align:left;background:#fff;border:2px solid {{ q.bd }};border-radius:14px;padding:14px;display:flex;gap:12px;align-items:center;cursor:pointer;color:#0E1736">
+              <span style="width:36px;height:36px;flex:none;border-radius:9px;background:#FCF1D6;color:#8C6206;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:20px">quiz</span>
+              <span style="flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.3"><span style="font-weight:700;font-size:14px">{{ q.t }}</span><span style="font-size:12px;color:#5A6280">{{ q.sub }}</span></span>
+              <span style="font-size:12px;font-weight:700;color:#5A6280;white-space:nowrap">{{ q.n }}</span>
+            </button>
+          </sc-for>
+          <div style="font-size:12px;color:#5A6280;padding:4px">To add a quiz, open a topic and press "+ Quiz".</div>
+        </div>
+        <sc-if value="{{ hasQuiz }}" hint-placeholder-val="{{ true }}">
+          <div style="flex:2.2 1 480px;min-width:0;background:#fff;border:1px solid #E4DFD3;border-radius:18px;overflow:hidden">
+            <div style="padding:18px 20px 0;display:flex;flex-direction:column;gap:6px">
+              <input value="{{ qzTitle }}" onChange="{{ setQzTitle }}" style="border:0;font-weight:800;font-size:20px;padding:0;color:#0E1736;background:transparent">
+              <div style="font-size:12px;color:#5A6280"><a href="{{ qzTopicHref }}">{{ qzSub }}</a></div>
+              <div style="display:flex;flex-wrap:wrap;gap:10px;margin:10px 0 4px">
+                <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#5A6280">Pass mark<select style="border:1px solid #D8D3C6;border-radius:8px;padding:7px;font-size:13px;background:#fff"><option>70%</option><option>60%</option><option>80%</option></select></label>
+                <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#5A6280">Time limit<select style="border:1px solid #D8D3C6;border-radius:8px;padding:7px;font-size:13px;background:#fff"><option>15 min</option><option>30 min</option><option>None</option></select></label>
+                <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#5A6280">Attempts<select style="border:1px solid #D8D3C6;border-radius:8px;padding:7px;font-size:13px;background:#fff"><option>Unlimited</option><option>1</option><option>3</option></select></label>
+                <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#5A6280">Order<select style="border:1px solid #D8D3C6;border-radius:8px;padding:7px;font-size:13px;background:#fff"><option>Shuffle</option><option>Fixed</option></select></label>
+              </div>
+              <div style="display:flex;gap:4px;border-bottom:1px solid #E4DFD3;margin:0 -20px;padding:0 20px">
+                <sc-for list="{{ qTabs }}" as="t" hint-placeholder-count="2">
+                  <button onClick="{{ t.pick }}" style="background:none;border:0;border-bottom:2.5px solid {{ t.bd }};padding:12px 12px;font-weight:700;font-size:13px;color:{{ t.fg }};cursor:pointer;margin-bottom:-1px">{{ t.label }}</button>
+                </sc-for>
+              </div>
+            </div>
+            <sc-if value="{{ qTabQ }}" hint-placeholder-val="{{ true }}">
+              <div style="padding:18px 20px;display:flex;flex-direction:column;gap:14px">
+                <sc-if value="{{ noQuestions }}" hint-placeholder-val="{{ false }}"><div style="padding:24px;text-align:center;color:#5A6280">No questions yet.</div></sc-if>
+                <sc-for list="{{ questions }}" as="q" hint-placeholder-count="3">
+                  <div style="border:1px solid #E4DFD3;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px">
+                    <div style="display:flex;gap:10px;align-items:flex-start">
+                      <span style="font-weight:900;color:#F2B22E;font-size:16px;padding-top:8px;min-width:22px">{{ q.n }}</span>
+                      <textarea rows="2" value="{{ q.text }}" onChange="{{ q.setText }}" placeholder="Type the question" style="flex:1;min-width:0;border:1px solid #D8D3C6;border-radius:10px;padding:10px;font-size:14px;font-weight:600;resize:vertical;color:#0E1736"></textarea>
+                      <button onClick="{{ q.remove }}" style="border:0;background:none;width:34px;height:34px;display:grid;place-items:center;cursor:pointer;color:#C2412D"><span style="font-family:'Material Symbols Rounded';font-size:20px">delete</span></button>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:8px;padding-left:32px">
+                      <sc-for list="{{ q.opts }}" as="o" hint-placeholder-count="4">
+                        <div style="display:flex;align-items:center;gap:8px;border:1.5px solid {{ o.rowBd }};border-radius:10px;padding:4px 4px 4px 6px">
+                          <button onClick="{{ o.pick }}" title="Mark as correct" style="width:28px;height:28px;flex:none;border-radius:50%;border:2px solid {{ o.bd }};background:{{ o.bg }};color:{{ o.fg }};font-weight:800;font-size:12px;cursor:pointer;display:grid;place-items:center">{{ o.k }}</button>
+                          <input value="{{ o.t }}" onChange="{{ o.set }}" placeholder="Answer option" style="flex:1;min-width:0;border:0;padding:8px 4px;font-size:13px;background:transparent;color:#0E1736">
+                        </div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </sc-for>
+                <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+                  <button onClick="{{ addQuestion }}" style="border:2px dashed #D3CDBF;background:transparent;border-radius:12px;padding:12px 18px;font-weight:700;color:#5A6280;cursor:pointer">+ Add question</button>
+                  <span style="font-size:12px;color:#5A6280">Click a letter to mark the correct answer.</span>
+                </div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ qTabR }}" hint-placeholder-val="{{ false }}">
+              <div style="overflow-x:auto"><div style="min-width:480px">
+                <sc-for list="{{ qResults }}" as="x" hint-placeholder-count="5">
+                  <div style="display:grid;grid-template-columns:1.6fr .7fr 1fr 1fr;gap:10px;align-items:center;padding:12px 20px;border-top:1px solid #F0ECE2">
+                    <span style="font-weight:600">{{ x.n }}</span>
+                    <span style="font-weight:800">{{ x.sc }}</span>
+                    <span style="color:#5A6280;font-size:13px">{{ x.at }}</span>
+                    <span><span style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:{{ x.sb }};color:{{ x.scc }}">{{ x.st }}</span></span>
+                  </div>
+                </sc-for>
+              </div></div>
+            </sc-if>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isStudents }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px">
+        <div>
+          <h1 style="font-family:'DM Serif Display',serif;font-weight:400;font-size:clamp(28px,3.6vw,40px);margin:0;line-height:1.1">Students</h1>
+          <div style="color:#5A6280">{{ sCount }}</div>
+        </div>
+        <button style="border:1.5px solid #D3CDBF;background:#fff;border-radius:999px;padding:10px 16px;font-weight:700;cursor:pointer;color:#0E1736;display:flex;align-items:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:18px">download</span>Export CSV</button>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+        <div style="flex:1 1 260px;max-width:420px;display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #E4DFD3;border-radius:10px;padding:0 12px">
+          <span style="font-family:'Material Symbols Rounded';font-size:20px;color:#8A90A6">search</span>
+          <input value="{{ sSearch }}" onChange="{{ setSSearch }}" placeholder="Name, student ID or faculty" style="flex:1;min-width:0;border:0;padding:11px 0;font-size:14px;background:transparent">
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <sc-for list="{{ sPlans }}" as="p" hint-placeholder-count="4">
+            <button onClick="{{ p.pick }}" style="border:1.5px solid {{ p.bd }};background:{{ p.bg }};color:{{ p.fg }};border-radius:999px;padding:7px 14px;font-weight:700;font-size:12px;cursor:pointer">{{ p.label }}</button>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
+        <div style="flex:1 1 380px;min-width:0;background:#fff;border:1px solid #E4DFD3;border-radius:18px;overflow:hidden">
+          <sc-if value="{{ noStudents }}" hint-placeholder-val="{{ false }}"><div style="padding:32px;text-align:center;color:#5A6280">No students match.</div></sc-if>
+          <sc-for list="{{ sRows }}" as="x" hint-placeholder-count="6">
+            <button onClick="{{ x.pick }}" style="width:100%;text-align:left;display:flex;align-items:center;gap:12px;padding:12px 16px;border:0;border-top:1px solid #F0ECE2;border-left:3px solid {{ x.bd }};background:{{ x.bg }};cursor:pointer;color:#0E1736">
+              <span style="width:38px;height:38px;flex:none;border-radius:50%;background:#DCE7F8;color:#0A2160;display:grid;place-items:center;font-size:12px;font-weight:800">{{ x.ini }}</span>
+              <span style="flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.3"><span style="font-weight:700">{{ x.n }}</span><span style="font-size:12px;color:#5A6280">{{ x.sub }}</span></span>
+              <span style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">
+                <span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:{{ x.pb }};color:{{ x.pf }}">{{ x.plan }}</span>
+                <span style="font-size:11px;color:#8A90A6">{{ x.prog }} avg · {{ x.active }}</span>
+              </span>
+            </button>
+          </sc-for>
+        </div>
+        <div style="flex:1.5 1 440px;min-width:0;display:flex;flex-direction:column;gap:14px">
+          <div style="background:#071A44;color:#fff;border-radius:18px;padding:22px;display:flex;flex-wrap:wrap;gap:16px;align-items:center">
+            <span style="width:64px;height:64px;border-radius:50%;background:#4BB4EC;color:#071A44;display:grid;place-items:center;font-weight:900;font-size:22px">{{ sx.ini }}</span>
+            <div style="flex:1 1 200px;display:flex;flex-direction:column;gap:2px">
+              <span style="font-weight:800;font-size:20px">{{ sx.n }}</span>
+              <span style="font-size:13px;color:rgba(255,255,255,.75)">{{ sx.fac }} · ID {{ sx.id }}</span>
+              <span style="font-size:13px;color:#4BB4EC">{{ sx.email }}</span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+              <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;background:{{ sx.pb }};color:{{ sx.pf }}">{{ sx.plan }}</span>
+              <span style="font-size:12px;color:rgba(255,255,255,.6)">Last active {{ sx.active }}</span>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px">
+            <div style="background:#fff;border:1px solid #E4DFD3;border-radius:14px;padding:14px;display:flex;flex-direction:column"><span style="font-weight:800;font-size:24px;color:#0A2160">{{ sx.nC }}</span><span style="font-size:12px;color:#5A6280">Courses</span></div>
+            <div style="background:#fff;border:1px solid #E4DFD3;border-radius:14px;padding:14px;display:flex;flex-direction:column"><span style="font-weight:800;font-size:24px;color:#0A2160">{{ sx.nQ }}</span><span style="font-size:12px;color:#5A6280">Quizzes taken</span></div>
+            <div style="background:#fff;border:1px solid #E4DFD3;border-radius:14px;padding:14px;display:flex;flex-direction:column"><span style="font-weight:800;font-size:24px;color:#0A2160">{{ sx.nR }}</span><span style="font-size:12px;color:#5A6280">Research</span></div>
+          </div>
+          <div style="background:#fff;border:1px solid #E4DFD3;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px">
+            <div style="font-weight:700">Course progress</div>
+            <sc-for list="{{ sxCourses }}" as="c" hint-placeholder-count="2">
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div style="display:flex;justify-content:space-between;gap:10px;font-size:13px"><span style="font-weight:600">{{ c.t }}</span><span style="font-weight:700;color:#5A6280">{{ c.p }}</span></div>
+                <div style="height:6px;border-radius:99px;background:#EEEAE0;overflow:hidden"><div style="width:{{ c.p }};height:100%;background:{{ c.c }}"></div></div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:14px">
+            <div style="background:#fff;border:1px solid #E4DFD3;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px">
+              <div style="font-weight:700">Quiz scores</div>
+              <sc-if value="{{ sxNoQuiz }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;color:#8A90A6">No quizzes yet</span></sc-if>
+              <sc-for list="{{ sxQuizzes }}" as="q" hint-placeholder-count="2">
+                <div style="display:flex;justify-content:space-between;font-size:13px"><span>{{ q.t }}</span><span style="font-weight:800;color:{{ q.c }}">{{ q.sc }}</span></div>
+              </sc-for>
+            </div>
+            <div style="background:#fff;border:1px solid #E4DFD3;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px">
+              <div style="font-weight:700">Research submissions</div>
+              <sc-if value="{{ sxNoRes }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;color:#8A90A6">None submitted</span></sc-if>
+              <sc-for list="{{ sxResearch }}" as="x" hint-placeholder-count="1">
+                <a href="#review" style="display:flex;flex-direction:column;gap:4px;font-size:13px;color:#0E1736;text-decoration:none"><span style="font-weight:600">{{ x.t }}</span><span style="align-self:flex-start;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:{{ x.sb }};color:{{ x.sc }}">{{ x.st }}</span></a>
+              </sc-for>
+            </div>
+          </div>
+          <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ true }}">
+            <div style="background:#fff;border:1px solid #E4DFD3;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px">
+              <div style="font-weight:700">Payments</div>
+              <sc-if value="{{ sxNoPay }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;color:#8A90A6">Free plan, no payments</span></sc-if>
+              <sc-for list="{{ sxPays }}" as="p" hint-placeholder-count="2">
+                <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;font-size:13px"><span style="font-weight:600">{{ p.t }}</span><span style="color:#5A6280">{{ p.m }} · {{ p.d }}</span><span style="font-weight:800">{{ p.amt }}</span></div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:18px;max-width:820px">
+      <div>
+        <h1 style="font-family:'DM Serif Display',serif;font-weight:400;font-size:clamp(28px,3.6vw,40px);margin:0;line-height:1.1">Roles &amp; permissions</h1>
+        <div style="color:#5A6280">Choose what co-admins can see and do. Admins always have full access.</div>
+      </div>
+      <div style="background:#fff;border:1px solid #E4DFD3;border-radius:18px;overflow:hidden">
+        <sc-for list="{{ perms }}" as="p" hint-placeholder-count="6">
+          <button onClick="{{ p.toggle }}" style="width:100%;display:flex;align-items:center;gap:14px;padding:16px 20px;border:0;border-top:1px solid #F0ECE2;background:#fff;cursor:pointer;text-align:left;color:#0E1736">
+            <span style="font-family:'Material Symbols Rounded';font-size:22px;color:#1446A0">{{ p.icon }}</span>
+            <span style="flex:1;display:flex;flex-direction:column"><span style="font-weight:700">{{ p.t }}</span><span style="font-size:12px;color:#5A6280">{{ p.d }}</span></span>
+            <span style="width:40px;height:24px;border-radius:99px;background:{{ p.bg }};position:relative;flex:none"><span style="position:absolute;top:3px;left:{{ p.x }};width:18px;height:18px;border-radius:50%;background:#fff"></span></span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+  </div>
+</main>
+
+<sc-if value="{{ mobile }}" hint-placeholder-val="{{ false }}">
+  <nav style="position:fixed;left:0;right:0;bottom:0;z-index:20;background:#071A44;display:flex;overflow-x:auto;padding:6px 4px calc(6px + env(safe-area-inset-bottom))">
+    <sc-for list="{{ nav }}" as="n" hint-placeholder-count="4">
+      <a href="{{ n.href }}" style="flex:1 0 68px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;min-height:52px;color:{{ n.mfg }};text-decoration:none;font-size:11px;font-weight:600">
+        <span style="font-family:'Material Symbols Rounded';font-size:24px">{{ n.icon }}</span>{{ n.short }}
+      </a>
+    </sc-for>
+  </nav>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  seed() {
+    let n = 0; const L = (type, t, d, free, up = 1) => ({ id: 'l' + (++n), type, t, d, free: !!free, up: !!up });
+    return [
+      { t: 'Asking a research question', desc: 'How to turn a clinical observation into a focused, answerable research question.', items: [L('video', 'What makes a question researchable', '12:04', 1), L('video', 'PICO and FINER frameworks', '18:30'), L('pdf', 'PICO worksheet', '4 pages'), L('quiz', 'Module quiz', '')] },
+      { t: 'Study designs', desc: 'Observational and experimental designs, and how to choose between them.', items: [L('video', 'Observational vs experimental', '22:05'), L('video', 'Choosing the right design', '16:12'), L('pdf', 'Design decision chart', '2 pages'), L('quiz', 'Module quiz', '')] },
+      { t: 'Literature search', desc: 'Searching PubMed efficiently and managing references.', items: [L('video', 'PubMed search strategies', '25:40'), L('video', 'Managing references with Zotero', '14:18'), L('pdf', 'Search string templates', '3 pages', 0, 0)] },
+    ];
+  }
+  seedQ() {
+    const q = (text, opts, a) => ({ text, opts, a });
+    return {
+      l4: [q('Which framework structures a clinical question into Population, Intervention, Comparison and Outcome?', ['FINER', 'PICO', 'SPIDER', 'STROBE'], 1), q('In FINER, what does the "N" stand for?', ['Necessary', 'Novel', 'Numerical', 'Neutral'], 1), q('A good research question should be…', ['As broad as possible', 'Answerable with available resources', 'Already answered in the literature', 'Unrelated to practice'], 1)],
+      l8: [q('A researcher follows 500 smokers and 500 non-smokers for 10 years to compare lung cancer rates. Which study design is this?', ['Case-control study', 'Prospective cohort study', 'Cross-sectional study', 'Randomized controlled trial'], 1), q('Which measure of association is calculated in a case-control study?', ['Relative risk', 'Odds ratio', 'Incidence rate', 'Hazard ratio'], 1), q('What is the main advantage of randomization in a clinical trial?', ['It reduces cost', 'It removes the need for consent', 'It balances known and unknown confounders', 'It increases sample size'], 2), q('A survey measures diabetes prevalence among students at one point in time. This is a…', ['Cross-sectional study', 'Cohort study', 'Ecological study', 'Case series'], 0), q('Which design is best for studying a rare disease?', ['Cohort study', 'Case-control study', 'Cross-sectional study', 'Field trial'], 1)],
+    };
+  }
+  parse() { const [r, q] = (location.hash.slice(1) || 'dashboard').split('?'); const role = (q || '').includes('role=coadmin') ? 'co' : ((this.state && this.state.role) || 'admin'); const [p, n] = (r || 'dashboard').split('/'); return { route: p || 'dashboard', role, ...(n !== undefined ? { ti: +n || 0, li: 0 } : {}) }; }
+  state = { ti: 0, li: 0, w: window.innerWidth, ...this.parse(), sel: 0, filter: 'all', decided: {}, published: false, member: true, mods: this.seed(), qdata: this.seedQ(), qkey: 'l8', qtab: 'q', media: 'video', msel: null, newCat: '', cats: [{ id: 'c1', name: 'Research methods' }, { id: 'c2', name: 'Biostatistics' }, { id: 'c3', name: 'Scientific writing' }, { id: 'c4', name: 'Conference prep' }], verified: {}, perms: { courses: true, review: true, students: true, payments: false, settings: false, del: false } };
+  componentDidMount() {
+    this.onR = () => this.setState({ w: window.innerWidth });
+    this.onH = () => { this.setState(this.parse()); window.scrollTo(0, 0); };
+    window.addEventListener('resize', this.onR); window.addEventListener('hashchange', this.onH);
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this.onR); window.removeEventListener('hashchange', this.onH); }
+  renderVals() {
+    const s = this.state, mobile = s.w < 760, admin = s.role === 'admin', r = s.route;
+    const navAll = [['dashboard', 'space_dashboard', 'Overview', 'Home', 1], ['courses', 'auto_stories', 'Courses & categories', 'Courses', 1], ['library', 'video_library', 'Media library', 'Media', 1], ['quizzes', 'quiz', 'Quizzes', 'Quizzes', 1], ['students', 'group', 'Students', 'Students', 1], ['review', 'rate_review', 'Research review', 'Review', 1], ['payments', 'payments', 'Payments & coupons', 'Payments', 0], ['settings', 'admin_panel_settings', 'Roles & settings', 'Settings', 0]];
+    const STAGE = { co: ['Co-admin review', '#1446A0', '#E3ECFB'], ad: ['Admin approval', '#B07A08', '#FCF1D6'], ok: ['Approved', '#1E8A5A', '#E3F3EA'], ch: ['Changes requested', '#C2412D', '#FBE7E3'] };
+    const base = [
+      { t: 'Antibiotic resistance awareness among first-year medical students', a: 'Mariam Hassan', sup: 'Dr. Toka Essam Samir', type: 'Original research', when: '18 Oct', st: 'ad', file: 'manuscript_v2.pdf', abs: 'A pre/post interventional study measuring knowledge of antibiotic resistance among 312 first-year students at East Port Said National University after a structured awareness program.', notes: [{ who: 'Youssef A. · Co-admin', text: 'Clear methods. Tighten the discussion before the conference.' }] },
+      { t: 'Smartphone use and neck pain in undergraduate students', a: 'Omar Khaled', sup: 'Dr. Salma Reda', type: 'Original research', when: '25 Oct', st: 'co', file: 'neck_pain_study.pdf', abs: 'Cross-sectional survey of 240 students assessing daily screen time, posture and self-reported neck pain using the Neck Disability Index.', notes: [] },
+      { t: 'Burnout among clinical-year medical students: a scoping review', a: 'Habiba Samy', sup: 'Dr. Hana Mostafa', type: 'Systematic review', when: '24 Oct', st: 'co', file: 'burnout_review.pdf', abs: 'Scoping review of 41 studies published between 2015 and 2026 on burnout prevalence and contributing factors in clinical-year students.', notes: [] },
+      { t: 'Hand hygiene compliance in teaching hospital wards', a: 'Ali Mansour', sup: 'Dr. Ahmed Fathy', type: 'Abstract / poster', when: '21 Oct', st: 'ad', file: 'hand_hygiene_abstract.pdf', abs: 'Direct observation of 1,100 hand hygiene opportunities across six wards using the WHO five moments framework.', notes: [{ who: 'Nada K. · Co-admin', text: 'Strong data. Ready for admin.' }] },
+      { t: 'Sleep quality and exam performance', a: 'Mariam Hassan', sup: 'Dr. Toka Essam Samir', type: 'Original research', when: '2 Oct', st: 'ch', file: 'sleep_survey.pdf', abs: 'Survey of 180 students correlating Pittsburgh Sleep Quality Index scores with end-of-term exam results.', notes: [{ who: 'Nada K. · Co-admin', text: 'Sample size justification is missing.' }] },
+    ].map((x, i) => ({ ...x, st: s.decided[i] || x.st }));
+    const counts = k => base.filter(x => k === 'all' || x.st === k).length;
+    const fl = [['all', 'All'], ['co', 'Co-admin review'], ['ad', 'Admin approval'], ['ch', 'Changes requested'], ['ok', 'Approved']];
+    const vis = base.map((x, i) => ({ ...x, i })).filter(x => s.filter === 'all' || x.st === s.filter);
+    const cx = base[s.sel], [stage, sc, sb] = STAGE[cx.st];
+    const myStage = admin ? 'ad' : 'co', canAct = cx.st === myStage;
+    const decide = v => this.setState(st => ({ decided: { ...st.decided, [st.sel]: v } }));
+    const navF = navAll.filter(n => admin || n[4]);
+    const navKey = ['builder', 'topic'].includes(r) ? 'courses' : r;
+    const nav = navF.map(([k, icon, label, short]) => ({ icon, label, short, href: '#' + k, badge: String(counts(myStage)), hasBadge: k === 'review' && counts(myStage) > 0, bg: navKey === k ? 'rgba(75,180,236,.16)' : 'transparent', fg: navKey === k ? '#fff' : 'rgba(255,255,255,.7)', mfg: navKey === k ? '#F2B22E' : 'rgba(255,255,255,.7)' }));
+    const enrollsRaw = [['MH', 'Mariam Hassan', 'Research Methodology Foundations', 'Course', 'EGP 337'], ['OK', 'Omar Khaled', 'All courses', 'Membership', 'EGP 199'], ['HS', 'Habiba Samy', 'Biostatistics with SPSS & R', 'Course', 'EGP 650'], ['AM', 'Ali Mansour', 'Intro to Research Ethics', 'Free', 'EGP 0'], ['NR', 'Nour Ramadan', 'All courses', 'Membership', 'EGP 199']];
+    const PB = { Course: ['#E3ECFB', '#1446A0'], Membership: ['#FCF1D6', '#8C6206'], Free: ['#EEEAE0', '#5A6280'] };
+    const bv = [18.2, 21.5, 19.8, 26.4, 24.1, 31.7, 28.9, 34.6];
+    const LT = { video: ['play_circle', '#E3ECFB', '#1446A0'], pdf: ['description', '#FBE7E3', '#C2412D'], quiz: ['quiz', '#FCF1D6', '#8C6206'] };
+    const mk = (type, t, d, free) => { const [icon, bg, fg] = LT[type]; return { icon, bg, fg, t, d, free: free ? 'Free preview' : '', fc: '#1E8A5A' }; };
+    const bm = [
+      ['Asking a research question', [mk('video', 'What makes a question researchable', 'Video · 12:04 · 1080p', 1), mk('video', 'PICO and FINER frameworks', 'Video · 18:30'), mk('pdf', 'PICO worksheet', 'PDF · 4 pages'), mk('quiz', 'Module quiz', '10 questions · pass 70%')]],
+      ['Study designs', [mk('video', 'Observational vs experimental', 'Video · 22:05'), mk('video', 'Choosing the right design', 'Video · 16:12'), mk('pdf', 'Design decision chart', 'PDF · 2 pages'), mk('quiz', 'Module quiz', '5 questions · pass 70%')]],
+      ['Literature search', [mk('video', 'PubMed search strategies', 'Video · 25:40'), mk('video', 'Managing references with Zotero', 'Video · 14:18')]],
+    ];
+    const Q = s.qdata, pad = i => String(i).padStart(2, '0');
+    const desc = l => l.type === 'quiz' ? (Q[l.id] || []).length + ' questions · pass 70%' : !l.up ? (l.type === 'video' ? 'Video · not uploaded' : 'File · not uploaded') : l.type === 'video' ? 'Video · ' + l.d + ' · 1080p' : 'PDF · ' + l.d;
+    const setMods = f => this.setState(st => ({ mods: f(st.mods.map(m => ({ ...m, items: m.items.map(x => ({ ...x })) }))) }));
+    const NEWL = { video: 'New video lesson', pdf: 'New file', quiz: 'New quiz' };
+    const addL = (i, type) => () => { const id = 'n' + Date.now(); setMods(m => { m[i].items.push({ id, type, t: NEWL[type], d: type === 'video' ? '18:42' : '6 pages', free: false, up: false }); return m; }); if (type === 'quiz') this.setState(st => ({ qdata: { ...st.qdata, [id]: [] } })); };
+    const bmods = s.mods.map((m, i) => ({ n: pad(i + 1), t: m.t, href: '#topic/' + i, count: m.items.length + ' items', items: m.items.map(l => ({ ...mk(l.type, l.t, desc(l), l.free), href: '#topic/' + i })), addVideo: addL(i, 'video'), addPdf: addL(i, 'pdf'), addQuiz: addL(i, 'quiz') }));
+    const ti = Math.max(0, Math.min(s.ti, s.mods.length - 1)), T = s.mods[ti] || { t: '', desc: '', items: [] }, li = Math.max(0, Math.min(s.li, T.items.length - 1)), Ls = T.items[li];
+    const upd = f => setMods(m => { f(m[ti]); return m; });
+    const tAdd = type => () => { addL(ti, type)(); this.setState({ li: T.items.length }); };
+    const quizList = []; s.mods.forEach((m, i) => m.items.forEach(l => { if (l.type === 'quiz') quizList.push({ l, mi: i, m }); }));
+    const QZ = quizList.find(x => x.l.id === s.qkey) || quizList[0], qk = QZ && QZ.l.id, qs = (qk && Q[qk]) || [];
+    const setQ = f => this.setState(st => ({ qdata: { ...st.qdata, [qk]: f((st.qdata[qk] || []).map(q => ({ ...q, opts: [...q.opts] }))) } }));
+    const media = []; s.mods.forEach((m, i) => m.items.forEach(l => { if (l.type !== 'quiz') media.push({ l, mi: i, m }); }));
+    const mf = media.filter(x => x.l.type === s.media), MS = mf.find(x => x.l.id === s.msel) || mf[0];
+    const COURSES = [['Research Methodology Foundations', 'c1', 'Published', 412, 19], ['Biostatistics with SPSS & R', 'c2', 'Published', 288, 32], ['Writing a Scientific Manuscript', 'c3', 'Published', 196, 24], ['Systematic Reviews & Meta-analysis', 'c1', 'Draft', 0, 11], ['Presenting at Research Conferences', 'c4', 'Published', 154, 13], ['Intro to Research Ethics', 'c1', 'Published', 523, 10]];
+    const topicVals = {
+      topicN: pad(ti + 1), topicTitle: T.t, topicDesc: T.desc, topicCount: T.items.length + ' lessons',
+      setTopicTitle: e => { const v = e.target.value; upd(t => { t.t = v; }); }, setTopicDesc: e => { const v = e.target.value; upd(t => { t.desc = v; }); },
+      prevTopic: '#topic/' + Math.max(0, ti - 1), nextTopic: '#topic/' + Math.min(s.mods.length - 1, ti + 1), topicPos: 'Topic ' + (ti + 1) + ' of ' + s.mods.length,
+      tItems: T.items.map((l, j) => ({ ...mk(l.type, l.t, desc(l), l.free), ibg: mk(l.type, '', '', 0).bg, bd: j === li ? '#1446A0' : '#E4DFD3', bg: j === li ? '#F4F7FD' : '#fff', pick: () => this.setState({ li: j }),
+        up: () => { if (j > 0) { upd(t => { [t.items[j - 1], t.items[j]] = [t.items[j], t.items[j - 1]]; }); this.setState({ li: j - 1 }); } },
+        down: () => { if (j < T.items.length - 1) { upd(t => { [t.items[j + 1], t.items[j]] = [t.items[j], t.items[j + 1]]; }); this.setState({ li: j + 1 }); } } })),
+      tAddVideo: tAdd('video'), tAddPdf: tAdd('pdf'), tAddQuiz: tAdd('quiz'),
+      deleteTopic: () => { setMods(m => { m.splice(ti, 1); return m; }); location.hash = 'builder'; },
+      hasLesson: !!Ls, noLesson: !Ls,
+      les: Ls ? { ...mk(Ls.type, Ls.t, desc(Ls), Ls.free), t: Ls.t, d: Ls.d, typeLabel: { video: 'Video lesson', pdf: 'PDF / file', quiz: 'Quiz' }[Ls.type] } : {},
+      lesVideoUp: !!Ls && Ls.type === 'video' && Ls.up, lesVideoNone: !!Ls && Ls.type === 'video' && !Ls.up,
+      lesPdfUp: !!Ls && Ls.type === 'pdf' && Ls.up, lesPdfNone: !!Ls && Ls.type === 'pdf' && !Ls.up, lesQuiz: !!Ls && Ls.type === 'quiz',
+      setLesTitle: e => { const v = e.target.value; upd(t => { t.items[li].t = v; }); },
+      lesFreeBg: Ls && Ls.free ? '#1446A0' : '#D3CDBF', lesFreeX: Ls && Ls.free ? '19px' : '3px', toggleLesFree: () => upd(t => { t.items[li].free = !t.items[li].free; }),
+      uploadLes: () => upd(t => { t.items[li].up = true; }), removeLes: () => { upd(t => { t.items.splice(li, 1); }); this.setState({ li: Math.max(0, li - 1) }); },
+      lesQCount: Ls ? (Q[Ls.id] || []).length + ' questions' : '', editQuiz: () => { this.setState({ qkey: Ls.id }); location.hash = 'quizzes'; },
+    };
+    const quizVals = {
+      quizzes: quizList.map(x => ({ t: x.l.t, sub: 'Topic ' + pad(x.mi + 1) + ' · ' + x.m.t, n: (Q[x.l.id] || []).length + ' questions', bd: x.l.id === qk ? '#1446A0' : '#E4DFD3', pick: () => this.setState({ qkey: x.l.id }) })),
+      hasQuiz: !!QZ, noQuiz: !QZ, qzTitle: QZ ? QZ.l.t : '', qzSub: QZ ? 'Research Methodology Foundations · Topic ' + pad(QZ.mi + 1) + ' · ' + QZ.m.t : '', qzTopicHref: QZ ? '#topic/' + QZ.mi : '#builder',
+      setQzTitle: e => { const v = e.target.value; setMods(m => { m[QZ.mi].items.find(x => x.id === qk).t = v; return m; }); },
+      qTabs: [['q', 'Questions · ' + qs.length], ['r', 'Results']].map(([k, label]) => ({ label, bd: s.qtab === k ? '#1446A0' : 'transparent', fg: s.qtab === k ? '#0E1736' : '#5A6280', pick: () => this.setState({ qtab: k }) })),
+      qTabQ: s.qtab === 'q', qTabR: s.qtab === 'r',
+      questions: qs.map((q, i) => ({ n: i + 1, text: q.text, setText: e => { const v = e.target.value; setQ(a => { a[i].text = v; return a; }); }, remove: () => setQ(a => { a.splice(i, 1); return a; }),
+        opts: q.opts.map((o, k) => ({ t: o, k: 'ABCD'[k], set: e => { const v = e.target.value; setQ(a => { a[i].opts[k] = v; return a; }); }, pick: () => setQ(a => { a[i].a = k; return a; }), bg: q.a === k ? '#1E8A5A' : '#fff', fg: q.a === k ? '#fff' : '#5A6280', bd: q.a === k ? '#1E8A5A' : '#D8D3C6', rowBd: q.a === k ? '#A8D9BF' : '#E4DFD3' })) })),
+      noQuestions: qs.length === 0, addQuestion: () => setQ(a => [...a, { text: '', opts: ['', '', '', ''], a: 0 }]),
+      qResults: [['Mariam Hassan', '80%', 'Passed', 2], ['Omar Khaled', '100%', 'Passed', 1], ['Habiba Samy', '60%', 'Not passed', 3], ['Ali Mansour', '80%', 'Passed', 1], ['Nour Ramadan', '40%', 'Not passed', 1]].map(([n, sc, st, at]) => ({ n, sc, st, at: at + (at > 1 ? ' attempts' : ' attempt'), sb: st === 'Passed' ? '#E3F3EA' : '#FBE7E3', scc: st === 'Passed' ? '#1E8A5A' : '#C2412D' })),
+    };
+    const mediaVals = {
+      mediaTabs: [['video', 'Videos'], ['pdf', 'PDFs & files']].map(([k, label]) => ({ label: label + ' · ' + media.filter(x => x.l.type === k).length, bg: s.media === k ? '#071A44' : '#fff', fg: s.media === k ? '#fff' : '#0E1736', bd: s.media === k ? '#071A44' : '#E4DFD3', pick: () => this.setState({ media: k, msel: null }) })),
+      mediaItems: mf.map(x => ({ t: x.l.t, sub: 'Topic ' + pad(x.mi + 1) + ' · ' + x.m.t, meta: x.l.up ? (x.l.type === 'video' ? x.l.d : x.l.d) : 'Not uploaded', mc: x.l.up ? '#5A6280' : '#C2412D', icon: x.l.type === 'video' ? 'play_circle' : 'description', tb: x.l.type === 'video' ? '#071A44' : '#FBE7E3', tf: x.l.type === 'video' ? 'rgba(255,255,255,.75)' : '#C2412D', bd: MS && x.l.id === MS.l.id ? '#1446A0' : '#E4DFD3', pick: () => this.setState({ msel: x.l.id }) })),
+      hasMedia: !!MS, mPrev: MS ? { t: MS.l.t, sub: 'Topic ' + pad(MS.mi + 1) + ' · ' + MS.m.t, meta: MS.l.up ? (MS.l.type === 'video' ? MS.l.d + ' · 1080p · MP4' : MS.l.d + ' · PDF') : 'Not uploaded yet', href: '#topic/' + MS.mi } : {},
+      mIsVid: !!MS && MS.l.type === 'video', mIsPdf: !!MS && MS.l.type === 'pdf',
+    };
+    const ST = [
+      ['Mariam Hassan', '2023-0418', 'Medicine', 2, 'Membership', 'Today', [['Research Methodology Foundations', 42], ['Biostatistics with SPSS & R', 15], ['Intro to Research Ethics', 100]], [['Topic 01 quiz', '100%'], ['Topic 02 quiz', '80%'], ['Ethics final', '90%']], [['Antibiotic resistance awareness', 'Admin approval'], ['Sleep quality and exam performance', 'Changes requested']], [['Research Methodology', 'EGP 337', 'Card · Paymob', '18 Oct'], ['Membership', 'EGP 199', 'Card · Paymob', '14 Oct']]],
+      ['Omar Khaled', '2022-0233', 'Medicine', 3, 'Membership', 'Yesterday', [['Research Methodology Foundations', 88], ['Writing a Scientific Manuscript', 54]], [['Topic 01 quiz', '100%'], ['Topic 02 quiz', '100%']], [['Smartphone use and neck pain', 'Co-admin review']], [['Membership', 'EGP 199', 'Vodafone Cash', '20 Oct']]],
+      ['Habiba Samy', '2021-0107', 'Medicine', 4, 'Course', '2 days ago', [['Biostatistics with SPSS & R', 31]], [['SPSS basics quiz', '60%']], [['Burnout among clinical-year students', 'Co-admin review']], [['Biostatistics', 'EGP 650', 'Fawry', '22 Oct']]],
+      ['Ali Mansour', '2023-0592', 'Pharmacy', 2, 'Free', 'Today', [['Intro to Research Ethics', 70]], [['Ethics final', '80%']], [['Hand hygiene compliance', 'Admin approval']], []],
+      ['Nour Ramadan', '2024-0045', 'Dentistry', 1, 'Membership', '3 days ago', [['Research Methodology Foundations', 12]], [['Topic 01 quiz', '40%']], [], [['Membership', 'EGP 199', 'Card · Paymob', '26 Oct']]],
+      ['Youssef Adel', '2022-0310', 'Medicine', 3, 'Course', 'Today', [['Biostatistics with SPSS & R', 5]], [], [], [['Biostatistics', 'EGP 650', 'InstaPay · awaiting check', '27 Oct']]],
+      ['Salma Wael', '2023-0221', 'Nursing', 2, 'Course', '1 week ago', [['Writing a Scientific Manuscript', 0]], [], [], [['Scientific Manuscript', 'EGP 400', 'Card · refunded', '9 Oct']]],
+    ];
+    const RS = { 'Admin approval': ['#FCF1D6', '#B07A08'], 'Co-admin review': ['#E3ECFB', '#1446A0'], 'Changes requested': ['#FBE7E3', '#C2412D'], Approved: ['#E3F3EA', '#1E8A5A'] };
+    const PLB = { Membership: ['#FCF1D6', '#8C6206'], Course: ['#E3ECFB', '#1446A0'], Free: ['#EEEAE0', '#5A6280'] };
+    const sq = (s.sq || '').toLowerCase(), spl = s.spl || 'All';
+    const stuF = ST.map((x, i) => ({ x, i })).filter(({ x }) => (spl === 'All' || x[4] === spl) && (!sq || (x[0] + ' ' + x[1] + ' ' + x[2]).toLowerCase().includes(sq)));
+    const sx = ST[s.ssel || 0];
+    const studentVals = {
+      sSearch: s.sq || '', setSSearch: e => this.setState({ sq: e.target.value }), sCount: stuF.length + ' of ' + ST.length + ' students',
+      sPlans: ['All', 'Membership', 'Course', 'Free'].map(p => ({ label: p, bg: spl === p ? '#071A44' : '#fff', fg: spl === p ? '#fff' : '#0E1736', bd: spl === p ? '#071A44' : '#E4DFD3', pick: () => this.setState({ spl: p }) })),
+      sRows: stuF.map(({ x, i }) => ({ n: x[0], ini: x[0].split(' ').map(w => w[0]).join(''), sub: x[2] + ' · Year ' + x[3] + ' · ' + x[1], plan: x[4], pb: PLB[x[4]][0], pf: PLB[x[4]][1], active: x[5], prog: x[6].length ? Math.round(x[6].reduce((a, c) => a + c[1], 0) / x[6].length) + '%' : '—', bd: (s.ssel || 0) === i ? '#1446A0' : 'transparent', bg: (s.ssel || 0) === i ? '#F4F7FD' : '#fff', pick: () => this.setState({ ssel: i }) })),
+      noStudents: stuF.length === 0,
+      sx: { n: sx[0], ini: sx[0].split(' ').map(w => w[0]).join(''), id: sx[1], fac: sx[2] + ' · Year ' + sx[3], email: sx[0].split(' ')[0].toLowerCase() + '.' + sx[0].split(' ')[1][0].toLowerCase() + '@epnu.edu.eg', plan: sx[4], pb: PLB[sx[4]][0], pf: PLB[sx[4]][1], active: sx[5], nC: String(sx[6].length), nQ: String(sx[7].length), nR: String(sx[8].length) },
+      sxCourses: sx[6].map(([t, p]) => ({ t, p: p + '%', c: p === 100 ? '#1E8A5A' : '#1446A0' })),
+      sxQuizzes: sx[7].map(([t, sc]) => ({ t, sc, c: parseInt(sc) >= 70 ? '#1E8A5A' : '#C2412D' })), sxNoQuiz: sx[7].length === 0,
+      sxResearch: sx[8].map(([t, st]) => ({ t, st, sb: RS[st][0], sc: RS[st][1] })), sxNoRes: sx[8].length === 0,
+      sxPays: sx[9].map(([t, amt, m, d]) => ({ t, amt, m, d })), sxNoPay: sx[9].length === 0,
+    };
+    const courseVals = {
+      coursesList: COURSES.map(([t, cat, st, stu, les]) => ({ t, cat: (s.cats.find(k => k.id === cat) || { name: 'Uncategorized' }).name, st, stu: stu + ' students', les: les + ' lessons', sb: st === 'Published' ? '#E3F3EA' : '#EEEAE0', sc: st === 'Published' ? '#1E8A5A' : '#5A6280' })),
+      catRows: s.cats.map(c => ({ name: c.name, n: COURSES.filter(x => x[1] === c.id).length + ' courses', set: e => { const v = e.target.value; this.setState(st => ({ cats: st.cats.map(k => k.id === c.id ? { ...k, name: v } : k) })); }, remove: () => this.setState(st => ({ cats: st.cats.filter(k => k.id !== c.id) })) })),
+      catOptions: s.cats.map(c => ({ name: c.name })),
+      newCat: s.newCat, setNewCat: e => this.setState({ newCat: e.target.value }),
+      addCat: () => { if (s.newCat.trim()) this.setState(st => ({ cats: [...st.cats, { id: 'c' + Date.now(), name: st.newCat.trim() }], newCat: '' })); },
+    };
+    const TX = [['Mariam Hassan', 'Research Methodology', 'Card · Paymob', 'EGP 337', 'Paid'], ['Omar Khaled', 'Membership (monthly)', 'Vodafone Cash', 'EGP 199', 'Paid'], ['Youssef Adel', 'Biostatistics', 'InstaPay', 'EGP 650', 'Verify'], ['Habiba Samy', 'Biostatistics', 'Fawry', 'EGP 650', 'Pending'], ['Nour Ramadan', 'Membership (monthly)', 'Card · Paymob', 'EGP 199', 'Paid'], ['Salma Wael', 'Scientific Manuscript', 'Card · Paymob', 'EGP 400', 'Refunded']];
+    const TS = { Paid: ['#E3F3EA', '#1E8A5A'], Verify: ['#FCF1D6', '#8C6206'], Pending: ['#E3ECFB', '#1446A0'], Refunded: ['#EEEAE0', '#5A6280'] };
+    const P = [['courses', 'auto_stories', 'Create and edit courses', 'Upload videos, PDFs and quizzes'], ['review', 'rate_review', 'First-stage research review', 'Forward or request changes'], ['students', 'group', 'View students', 'Names, progress and quiz scores'], ['payments', 'payments', 'Revenue & payments', 'Transactions, coupons, gateways'], ['settings', 'settings', 'Platform settings', 'Branding, gateways, integrations'], ['del', 'delete', 'Delete courses', 'Permanently remove a course']];
+    return {
+      mobile, desktop: !mobile, mainPadB: mobile ? '84px' : '0', nav, isAdmin: admin, isCo: !admin,
+      roleLabel: admin ? 'Admin' : 'Co-admin', userName: admin ? 'Toka Essam' : 'Youssef Adel', initials: admin ? 'TE' : 'YA',
+      rbA: admin ? '#071A44' : 'transparent', rfA: admin ? '#fff' : '#3A4260', rbC: admin ? 'transparent' : '#071A44', rfC: admin ? '#3A4260' : '#fff',
+      asAdmin: () => this.setState({ role: 'admin' }), asCo: () => this.setState({ role: 'co', route: ['payments', 'settings'].includes(r) ? 'dashboard' : r }),
+      isDash: r === 'dashboard', isBuilder: r === 'builder', isReview: r === 'review', isPayments: r === 'payments', isSettings: r === 'settings' && admin,
+      kpis: [
+        { t: 'Active students', v: '1,284', d: '+86 this month' },
+        { t: 'Course completions', v: '312', d: '74% quiz pass rate' },
+        { t: admin ? 'Awaiting your approval' : 'Awaiting your review', v: String(counts(myStage)), d: 'Research submissions' },
+        ...(admin ? [{ t: 'Revenue this month', v: 'EGP 34.6k', d: '+20% vs September', dark: 1 }] : [{ t: 'Live sessions', v: '6', d: 'Scheduled this month' }]),
+      ].map(k => ({ ...k, bg: k.dark ? '#071A44' : '#fff', fg: k.dark ? '#fff' : '#0E1736', bd: k.dark ? '#071A44' : '#E4DFD3' })),
+      bars: bv.map((v, i) => ({ v: v + 'k', h: Math.round(v / 36 * 130) + 'px', l: 'W' + (35 + i), c: i === bv.length - 1 ? '#F2B22E' : '#1446A0' })),
+      queueTitle: admin ? 'Ready for final approval' : 'Needs first review',
+      queuePreview: base.filter(x => x.st === myStage).map(x => ({ t: x.t, a: x.a, when: x.when })),
+      amountCol: admin ? 'Amount' : 'Enrolled',
+      enrolls: enrollsRaw.map(([i, n, c, p, amt], k) => ({ i, n, c, p, amt: admin ? amt : ['2h ago', '5h ago', 'Yesterday', 'Yesterday', '2 days ago'][k], pb: PB[p][0], pf: PB[p][1] })),
+      ...topicVals, ...quizVals, ...mediaVals, ...courseVals, ...studentVals,
+      isStudents: r === 'students', isCourses: r === 'courses', isTopic: r === 'topic', isLibrary: r === 'library', isQuizzes: r === 'quizzes',
+      bmods, addModule: () => setMods(m => [...m, { t: 'Untitled topic', desc: '', items: [] }]), publish: () => this.setState({ published: !s.published }), publishLabel: s.published ? 'Published ✓' : 'Publish changes',
+      memBg: s.member ? '#1446A0' : '#D3CDBF', memX: s.member ? '19px' : '3px', toggleMember: () => this.setState({ member: !s.member }),
+      reviewSub: admin ? 'Final approval. Co-admins forward submissions to you.' : 'First-stage review. Forward strong submissions to an admin.',
+      filters: fl.map(([k, label]) => ({ label, n: counts(k), bg: s.filter === k ? '#071A44' : '#fff', fg: s.filter === k ? '#fff' : '#0E1736', bd: s.filter === k ? '#071A44' : '#E4DFD3', pick: () => this.setState({ filter: k }) })),
+      queue: vis.map(x => { const [st2, c2, b2] = STAGE[x.st]; return { t: x.t, a: x.a, type: x.type, when: x.when, stage: st2, sc: c2, sb: b2, bd: x.i === s.sel ? '#1446A0' : '#E4DFD3', pick: () => this.setState({ sel: x.i }) }; }),
+      cur: { ...cx, stage, sc, sb },
+      canAct, cantAct: !canAct,
+      cantMsg: cx.st === 'ok' ? 'Approved. The student has been notified.' : cx.st === 'ch' ? 'Waiting for the student to upload a revised version.' : admin ? 'Waiting for a co-admin to finish the first review.' : 'Forwarded. An admin will make the final decision.',
+      noLabel: 'Request changes', yesLabel: admin ? 'Approve' : 'Forward to admin', yesBg: admin ? '#1E8A5A' : '#071A44', yesFg: '#fff',
+      decideNo: () => decide('ch'), decideYes: () => decide(admin ? 'ok' : 'ad'),
+      payKpis: [{ t: 'Revenue (Oct)', v: 'EGP 34,620', d: '186 payments' }, { t: 'Active members', v: '142', d: 'EGP 28.3k MRR' }, { t: 'Awaiting verification', v: '3', d: 'InstaPay receipts' }, { t: 'Coupon savings', v: 'EGP 4,180', d: '61 redemptions' }],
+      txns: TX.map(([n, item, m, amt, st], i) => { const v = st === 'Verify' && !s.verified[i]; const S = v ? 'Verify' : st === 'Verify' ? 'Paid' : st; return { n, item, m, amt, s: v ? 'Receipt' : S, sb: TS[S][0], sc: TS[S][1], verify: v, doVerify: () => this.setState(x => ({ verified: { ...x.verified, [i]: 1 } })) }; }),
+      coupons: [{ code: 'SRI25', d: '25% off any course', used: '38 / 100' }, { code: 'FRESHERS', d: 'First month free', used: '19' }, { code: 'CONF50', d: 'EGP 50 off conference prep', used: '4 / 50' }],
+      gateways: [{ t: 'Paymob (cards, wallets)', s: 'Connected', c: '#1E8A5A' }, { t: 'Fawry', s: 'Connected', c: '#1E8A5A' }, { t: 'InstaPay', s: 'Manual check', c: '#F2B22E' }, { t: 'Recurring billing', s: 'Paymob subscriptions', c: '#1E8A5A' }],
+      perms: P.map(([k, icon, t, d]) => ({ icon, t, d, bg: s.perms[k] ? '#1446A0' : '#D3CDBF', x: s.perms[k] ? '19px' : '3px', toggle: () => this.setState(x => ({ perms: { ...x.perms, [k]: !x.perms[k] } })) })),
+    };
+  }
+}
+</script>
+</body>
+</html>

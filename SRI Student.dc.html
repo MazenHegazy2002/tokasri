@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=DM+Serif+Display&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,0,0" rel="stylesheet">
+<style>
+body{margin:0;background:#F6F3EC;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#1446A0;text-decoration:none}
+a:hover{color:#0A2160;text-decoration:underline}
+input,select,button,textarea{font-family:inherit}
+</style>
+</helmet>
+<div style="min-height:100vh;display:flex;background:#F6F3EC;font-family:'Montserrat',sans-serif;color:#0E1736;font-size:15px;line-height:1.5">
+
+<sc-if value="{{ desktop }}" hint-placeholder-val="{{ true }}">
+  <aside style="width:248px;flex:none;background:#071A44;color:#fff;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:20px 14px">
+    <a href="SRI Public.dc.html#landing" style="display:flex;align-items:center;gap:10px;color:#fff;padding:0 8px 24px;text-decoration:none">
+      <img src="assets/sri-logo.png" alt="SRI" style="width:40px;height:40px;border-radius:50%">
+      <span style="display:flex;flex-direction:column;line-height:1.05"><span style="font-weight:800;font-size:18px">SRI</span><span style="font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#4BB4EC">Student</span></span>
+    </a>
+    <nav style="display:flex;flex-direction:column;gap:4px">
+      <sc-for list="{{ nav }}" as="n" hint-placeholder-count="5">
+        <a href="{{ n.href }}" style="display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;font-weight:600;font-size:14px;color:{{ n.fg }};background:{{ n.bg }};text-decoration:none">
+          <span style="font-family:'Material Symbols Rounded';font-size:21px">{{ n.icon }}</span>{{ n.label }}
+        </a>
+      </sc-for>
+    </nav>
+    <div style="margin-top:auto;background:rgba(255,255,255,.06);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px">
+      <div style="font-size:12px;font-weight:700;color:#F2B22E;letter-spacing:.1em;text-transform:uppercase">Membership</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.8)">Active · renews Nov 14</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;padding:16px 8px 0">
+      <div style="width:36px;height:36px;border-radius:50%;background:#4BB4EC;color:#071A44;display:grid;place-items:center;font-weight:800;font-size:13px">MH</div>
+      <div style="display:flex;flex-direction:column;line-height:1.2"><span style="font-weight:700;font-size:13px">Mariam Hassan</span><span style="font-size:11px;color:rgba(255,255,255,.6)">Medicine · Year 2</span></div>
+    </div>
+  </aside>
+</sc-if>
+
+<main style="flex:1;min-width:0;padding-bottom:{{ mainPadB }}">
+  <sc-if value="{{ mobile }}" hint-placeholder-val="{{ false }}">
+    <div style="position:sticky;top:0;z-index:10;background:#071A44;color:#fff;display:flex;align-items:center;gap:10px;padding:10px 16px">
+      <img src="assets/sri-logo.png" alt="SRI" style="width:34px;height:34px;border-radius:50%">
+      <span style="font-weight:800">SRI</span>
+      <div style="margin-left:auto;width:34px;height:34px;border-radius:50%;background:#4BB4EC;color:#071A44;display:grid;place-items:center;font-weight:800;font-size:12px">MH</div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isDash }}" hint-placeholder-val="{{ true }}">
+    <div style="max-width:1200px;margin:0 auto;padding:clamp(20px,4vw,40px);display:flex;flex-direction:column;gap:28px">
+      <div>
+        <div style="font-size:13px;color:#5A6280">Tuesday, 27 October</div>
+        <h1 style="font-family:'DM Serif Display',serif;font-weight:400;font-size:clamp(30px,4vw,44px);margin:4px 0 0;line-height:1.1">Good afternoon, Mariam</h1>
+      </div>
+      <a href="#player" style="display:flex;flex-wrap:wrap;background:#071A44;border-radius:20px;overflow:hidden;color:#fff;text-decoration:none">
+        <div style="flex:1 1 280px;min-height:180px;background:repeating-linear-gradient(135deg,rgba(255,255,255,.05) 0 10px,transparent 10px 20px);display:grid;place-items:center;position:relative">
+          <span style="width:58px;height:58px;border-radius:50%;background:#F2B22E;display:grid;place-items:center"><span style="font-family:'Material Symbols Rounded';font-size:32px;color:#071A44">play_arrow</span></span>
+          <span style="position:absolute;bottom:10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,.5)">lesson thumbnail</span>
+        </div>
+        <div style="flex:1 1 340px;padding:26px;display:flex;flex-direction:column;gap:10px">
+          <div style="font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#4BB4EC">Continue learning</div>
+          <div style="font-weight:800;font-size:22px;line-height:1.25">Study designs: Observational vs experimental</div>
+          <div style="font-size:14px;color:rgba(255,255,255,.7)">Research Methodology Foundations · Module 2 · 14 min left</div>
+          <div style="margin-top:auto;display:flex;align-items:center;gap:12px">
+            <div style="flex:1;height:6px;border-radius:99px;background:rgba(255,255,255,.15);overflow:hidden"><div style="width:42%;height:100%;background:#F2B22E"></div></div>
+            <span style="font-size:13px;font-weight:700">42%</span>
+          </div>
+        </div>
+      </a>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:20px">
+        <div style="background:#fff;border:1px solid #E4DFD3;border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-weight:700">Due this week</span></div>
+          <sc-for list="{{ due }}" as="d" hint-placeholder-count="3">
+            <a href="{{ d.href }}" style="display:flex;gap:12px;align-items:center;color:#0E1736;text-decoration:none">
+              <span style="width:40px;height:40px;border-radius:10px;background:#EFE6CF;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:21px;color:#0A2160">{{ d.icon }}</span>
+              <span style="flex:1;display:flex;flex-direction:column;min-width:0"><span style="font-weight:600;font-size:14px">{{ d.t }}</span><span style="font-size:12px;color:#5A6280">{{ d.s }}</span></span>
+              <span style="font-size:12px;font-weight:700;color:{{ d.c }}">{{ d.when }}</span>
+            </a>
+          </sc-for>
+        </div>
+        <a href="#research" style="background:#fff;border:1px solid #E4DFD3;border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:16px;color:#0E1736;text-decoration:none">
+          <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-weight:700">My research</span><span style="font-size:12px;font-weight:700;color:#B07A08;background:#FCF1D6;padding:4px 10px;border-radius:999px">In review</span></div>
+          <div style="font-weight:600;font-size:15px;line-height:1.35">Antibiotic resistance awareness among first-year medical students</div>
+          <div style="display:flex;align-items:center;gap:0">
+            <sc-for list="{{ stageDots }}" as="sd" hint-placeholder-count="4">
+              <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+                <div style="height:6px;border-radius:99px;background:{{ sd.c }};margin-right:4px"></div>
+                <span style="font-size:11px;color:#5A6280;font-weight:600">{{ sd.t }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="font-size:13px;color:#3A4260;background:#F6F3EC;border-radius:10px;padding:12px">Co-admin forwarded to admin with 2 comments. Waiting for final approval.</div>
+        </a>
+      </div>
+      <div>
+        <div style="font-weight:700;font-size:18px;margin-bottom:14px">My courses</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:16px">
+          <sc-for list="{{ myCourses }}" as="c" hint-placeholder-count="3">
+            <a href="#player" style="background:#fff;border:1px solid #E4DFD3;border-radius:16px;overflow:hidden;color:#0E1736;text-decoration:none;display:flex;flex-direction:column">
+              <div style="aspect-ratio:16/8;background:repeating-linear-gradient(135deg,#E9EEF7 0 10px,#DDE5F2 10px 20px);display:grid;place-items:center"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#5A6B90">course cover</span></div>
+              <div style="padding:16px;display:flex;flex-direction:column;gap:10px">
+                <div style="font-weight:700;font-size:15px;line-height:1.3">{{ c.t }}</div>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div style="flex:1;height:5px;border-radius:99px;background:#EEEAE0;overflow:hidden"><div style="width:{{ c.p }};height:100%;background:#1446A0"></div></div>
+                  <span style="font-size:12px;font-weight:700;color:#5A6280">{{ c.p }}</span>
+                </div>
+              </div>
+            </a>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isPlayer }}" hint-placeholder-val="{{ false }}">
+    <div style="max-width:1360px;margin:0 auto;padding:clamp(12px,3vw,32px);display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start">
+      <div style="flex:1 1 620px;min-width:0;display:flex;flex-direction:column;gap:18px">
+        <div style="font-size:13px;color:#5A6280;display:flex;gap:6px;align-items:center;flex-wrap:wrap"><a href="#dashboard">My courses</a><span>/</span><span>Research Methodology Foundations</span></div>
+        <div style="aspect-ratio:16/9;background:#050F2A;border-radius:16px;overflow:hidden;position:relative;display:grid;place-items:center;background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.03) 0 12px,transparent 12px 24px)">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(255,255,255,.45);position:absolute;top:14px;left:16px">lesson video</span>
+          <button onClick="{{ togglePlay }}" style="width:72px;height:72px;border-radius:50%;border:0;background:#F2B22E;display:grid;place-items:center;cursor:pointer"><span style="font-family:'Material Symbols Rounded';font-size:40px;color:#071A44">{{ playIcon }}</span></button>
+          <div style="position:absolute;left:0;right:0;bottom:0;padding:14px 16px;display:flex;align-items:center;gap:14px;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.6))">
+            <span style="font-family:'Material Symbols Rounded';font-size:22px">{{ playIcon }}</span>
+            <span style="font-size:12px;font-variant-numeric:tabular-nums">09:14 / 22:05</span>
+            <div style="flex:1;height:4px;border-radius:99px;background:rgba(255,255,255,.25)"><div style="width:42%;height:100%;background:#F2B22E;border-radius:99px"></div></div>
+            <span style="font-size:12px;font-weight:700">1.25×</span>
+            <span style="font-family:'Material Symbols Rounded';font-size:22px">closed_caption</span>
+            <span style="font-family:'Material Symbols Rounded';font-size:22px">fullscreen</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;justify-content:space-between">
+          <div>
+            <div style="font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#1446A0">Module 2 · Lesson 1</div>
+            <h1 style="font-size:clamp(20px,2.4vw,26px);margin:4px 0 0;line-height:1.25">Observational vs experimental designs</h1>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button style="border:1.5px solid #D3CDBF;background:#fff;border-radius:999px;padding:10px 16px;font-weight:700;font-size:13px;cursor:pointer;color:#0E1736">Previous</button>
+            <button style="border:0;background:#071A44;color:#fff;border-radius:999px;padding:11px 18px;font-weight:700;font-size:13px;cursor:pointer">Mark complete &amp; next</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:4px;border-bottom:1px solid #E4DFD3">
+          <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3">
+            <button onClick="{{ t.pick }}" style="background:none;border:0;border-bottom:2.5px solid {{ t.bd }};padding:12px 14px;font-weight:700;font-size:14px;color:{{ t.fg }};cursor:pointer;margin-bottom:-1px">{{ t.label }}</button>
+          </sc-for>
+        </div>
+        <sc-if value="{{ tabOverview }}" hint-placeholder-val="{{ true }}">
+          <div style="color:#3A4260;max-width:720px;display:flex;flex-direction:column;gap:12px">
+            <p style="margin:0">This lesson compares cohort, case-control and cross-sectional studies with randomized controlled trials, and walks through when each one fits your research question.</p>
+            <p style="margin:0">Before the module quiz, download the design decision chart in Resources and try classifying the three example studies.</p>
+          </div>
+        </sc-if>
+        <sc-if value="{{ tabResources }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ files }}" as="f" hint-placeholder-count="3">
+              <div style="background:#fff;border:1px solid #E4DFD3;border-radius:12px;padding:14px;display:flex;align-items:center;gap:14px">
+                <span style="width:42px;height:42px;border-radius:10px;background:{{ f.bg }};color:{{ f.fg }};display:grid;place-items:center;font-size:11px;font-weight:800">{{ f.ext }}</span>
+                <span style="flex:1;min-width:0;display:flex;flex-direction:column"><span style="font-weight:600;font-size:14px">{{ f.t }}</span><span style="font-size:12px;color:#5A6280">{{ f.s }}</span></span>
+                <button style="border:0;background:#EFE6CF;border-radius:10px;width:40px;height:40px;display:grid;place-items:center;cursor:pointer"><span style="font-family:'Material Symbols Rounded';font-size:21px;color:#0A2160">download</span></button>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ tabNotes }}" hint-placeholder-val="{{ false }}">
+          <textarea placeholder="Notes are saved with a timestamp from the video…" style="width:100%;min-height:140px;border:1px solid #D8D3C6;border-radius:12px;padding:14px;font-size:14px;background:#fff;resize:vertical"></textarea>
+        </sc-if>
+      </div>
+      <aside style="flex:1 1 320px;max-width:100%;min-width:0;background:#fff;border:1px solid #E4DFD3;border-radius:16px;overflow:hidden">
+        <div style="padding:18px 18px 14px;border-bottom:1px solid #EEEAE0">
+          <div style="font-weight:700">Course content</div>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:10px"><div style="flex:1;height:5px;border-radius:99px;background:#EEEAE0;overflow:hidden"><div style="width:42%;height:100%;background:#1446A0"></div></div><span style="font-size:12px;font-weight:700;color:#5A6280">8 / 19</span></div>
+        </div>
+        <sc-for list="{{ outline }}" as="m" hint-placeholder-count="3">
+          <div style="padding:14px 18px 6px;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#5A6280">{{ m.t }}</div>
+          <sc-for list="{{ m.items }}" as="l" hint-placeholder-count="3">
+            <a href="{{ l.href }}" style="display:flex;align-items:center;gap:12px;padding:10px 18px;color:#0E1736;text-decoration:none;background:{{ l.bg }}">
+              <span style="font-family:'Material Symbols Rounded';font-size:20px;color:{{ l.ic }}">{{ l.state }}</span>
+              <span style="flex:1;min-width:0;font-size:14px;font-weight:{{ l.fw }}">{{ l.t }}</span>
+              <span style="font-size:12px;color:#8A90A6">{{ l.d }}</span>
+            </a>
+          </sc-for>
+        </sc-for>
+      </aside>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isQuiz }}" hint-placeholder-val="{{ false }}">
+    <div style="max-width:820px;margin:0 auto;padding:clamp(20px,4vw,48px) clamp(16px,4vw,40px)">
+      <sc-if value="{{ quizActive }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+          <div style="font-size:13px;color:#5A6280">Module 2 quiz · Study designs</div>
+          <div style="display:flex;align-items:center;gap:6px;font-weight:700;font-size:14px;color:#0A2160;background:#fff;border:1px solid #E4DFD3;padding:7px 12px;border-radius:999px"><span style="font-family:'Material Symbols Rounded';font-size:18px">timer</span>11:42</div>
+        </div>
+        <div style="display:flex;gap:4px;margin:18px 0 28px">
+          <sc-for list="{{ qBar }}" as="b" hint-placeholder-count="5">
+            <div style="flex:1;height:6px;border-radius:99px;background:{{ b.c }}"></div>
+          </sc-for>
+        </div>
+        <div style="font-size:13px;font-weight:700;color:#1446A0;letter-spacing:.1em;text-transform:uppercase">Question {{ qNum }} of {{ qTotal }}</div>
+        <h1 style="font-size:clamp(20px,2.6vw,26px);line-height:1.35;margin:10px 0 24px;text-wrap:pretty">{{ q.text }}</h1>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ q.opts }}" as="o" hint-placeholder-count="4">
+            <button onClick="{{ o.pick }}" style="text-align:left;background:{{ o.bg }};border:2px solid {{ o.bd }};border-radius:14px;padding:16px 18px;display:flex;gap:14px;align-items:center;cursor:pointer;font-size:15px;color:#0E1736;min-height:56px">
+              <span style="width:30px;height:30px;flex:none;border-radius:50%;border:2px solid {{ o.bd }};background:{{ o.dot }};color:{{ o.dotFg }};display:grid;place-items:center;font-weight:800;font-size:13px">{{ o.k }}</span>
+              <span>{{ o.t }}</span>
+            </button>
+          </sc-for>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:28px;gap:12px">
+          <button onClick="{{ prevQ }}" style="border:1.5px solid #D3CDBF;background:#fff;border-radius:999px;padding:12px 20px;font-weight:700;cursor:pointer;color:#0E1736">Previous</button>
+          <button onClick="{{ nextQ }}" style="border:0;background:#071A44;color:#fff;border-radius:999px;padding:13px 24px;font-weight:700;cursor:pointer">{{ nextLabel }}</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ quizDone }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#071A44;color:#fff;border-radius:22px;padding:clamp(24px,5vw,44px);display:flex;flex-wrap:wrap;gap:28px;align-items:center;position:relative;overflow:hidden">
+          <div style="position:absolute;right:-30px;bottom:-30px;width:200px;height:200px;background-image:radial-gradient(#F2B22E 2px,transparent 2.4px);background-size:13px 13px;opacity:.3"></div>
+          <div style="font-weight:900;font-size:clamp(64px,10vw,96px);line-height:1;color:#F2B22E">{{ score }}</div>
+          <div style="flex:1 1 260px;display:flex;flex-direction:column;gap:8px">
+            <div style="font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#4BB4EC">{{ resultTag }}</div>
+            <div style="font-weight:800;font-size:24px">{{ resultTitle }}</div>
+            <div style="color:rgba(255,255,255,.75);font-size:14px">Pass mark is 70%. Your best score counts toward the certificate.</div>
+          </div>
+        </div>
+        <div style="font-weight:700;font-size:18px;margin:32px 0 14px">Review answers</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ review }}" as="r" hint-placeholder-count="5">
+            <div style="background:#fff;border:1px solid #E4DFD3;border-radius:14px;padding:16px;display:flex;gap:14px">
+              <span style="font-family:'Material Symbols Rounded';font-size:24px;color:{{ r.c }}">{{ r.icon }}</span>
+              <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
+                <div style="font-weight:600;font-size:14px">{{ r.q }}</div>
+                <div style="font-size:13px;color:#5A6280">Correct answer: {{ r.a }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:24px;flex-wrap:wrap">
+          <button onClick="{{ retake }}" style="border:1.5px solid #D3CDBF;background:#fff;border-radius:999px;padding:12px 20px;font-weight:700;cursor:pointer;color:#0E1736">Retake quiz</button>
+          <a href="#player" style="background:#F2B22E;color:#071A44;border-radius:999px;padding:13px 22px;font-weight:700;text-decoration:none">Continue course</a>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isResearch }}" hint-placeholder-val="{{ false }}">
+    <div style="max-width:1200px;margin:0 auto;padding:clamp(20px,4vw,40px);display:flex;flex-direction:column;gap:24px">
+      <div>
+        <h1 style="font-family:'DM Serif Display',serif;font-weight:400;font-size:clamp(30px,4vw,44px);margin:0;line-height:1.1">My research</h1>
+        <p style="margin:6px 0 0;color:#5A6280">Every submission is read by a co-admin first, then approved by an admin.</p>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start">
+        <div style="flex:1 1 440px;min-width:0;background:#fff;border:1px solid #E4DFD3;border-radius:18px;padding:22px;display:flex;flex-direction:column;gap:14px">
+          <div style="font-weight:700;font-size:17px">New submission</div>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#5A6280">Title<input placeholder="Full manuscript title" style="border:1px solid #D8D3C6;border-radius:10px;padding:12px;font-size:15px"></label>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:12px">
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#5A6280">Type<select style="border:1px solid #D8D3C6;border-radius:10px;padding:12px;font-size:15px;background:#fff"><option>Original research</option><option>Systematic review</option><option>Case report</option><option>Abstract / poster</option></select></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#5A6280">Supervisor<input placeholder="Dr. …" style="border:1px solid #D8D3C6;border-radius:10px;padding:12px;font-size:15px"></label>
+          </div>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#5A6280">Co-authors<input placeholder="Names, separated by commas" style="border:1px solid #D8D3C6;border-radius:10px;padding:12px;font-size:15px"></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#5A6280">Abstract<textarea rows="4" placeholder="250 words max" style="border:1px solid #D8D3C6;border-radius:10px;padding:12px;font-size:15px;resize:vertical"></textarea></label>
+          <button onClick="{{ addFile }}" style="border:2px dashed #B9C6E2;background:#F4F7FD;border-radius:14px;padding:24px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;color:#0E1736">
+            <span style="font-family:'Material Symbols Rounded';font-size:32px;color:#1446A0">upload_file</span>
+            <span style="font-weight:700;font-size:14px">{{ fileLabel }}</span>
+            <span style="font-size:12px;color:#5A6280">PDF or DOCX, up to 25 MB</span>
+          </button>
+          <button style="border:0;background:#F2B22E;color:#071A44;border-radius:12px;padding:15px;font-weight:800;cursor:pointer">Submit for review</button>
+        </div>
+        <div style="flex:1 1 440px;min-width:0;display:flex;flex-direction:column;gap:14px">
+          <sc-for list="{{ subs }}" as="s" hint-placeholder-count="3">
+            <div style="background:#fff;border:1px solid #E4DFD3;border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:14px">
+              <div style="display:flex;gap:12px;align-items:flex-start;justify-content:space-between">
+                <div style="font-weight:700;font-size:15px;line-height:1.35">{{ s.t }}</div>
+                <span style="flex:none;font-size:12px;font-weight:700;color:{{ s.sc }};background:{{ s.sb }};padding:4px 10px;border-radius:999px">{{ s.status }}</span>
+              </div>
+              <div style="font-size:12px;color:#5A6280">{{ s.meta }}</div>
+              <div style="display:flex;flex-direction:column;gap:0">
+                <sc-for list="{{ s.timeline }}" as="e" hint-placeholder-count="3">
+                  <div style="display:flex;gap:12px">
+                    <div style="display:flex;flex-direction:column;align-items:center"><span style="width:12px;height:12px;border-radius:50%;background:{{ e.c }};margin-top:4px;flex:none"></span><span style="width:2px;flex:1;background:#EEEAE0;min-height:14px"></span></div>
+                    <div style="padding-bottom:12px;display:flex;flex-direction:column;gap:2px;min-width:0">
+                      <span style="font-size:13px;font-weight:700">{{ e.t }}</span>
+                      <span style="font-size:13px;color:#5A6280">{{ e.d }}</span>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</main>
+
+<sc-if value="{{ mobile }}" hint-placeholder-val="{{ false }}">
+  <nav style="position:fixed;left:0;right:0;bottom:0;z-index:20;background:#071A44;display:flex;padding:6px 4px calc(6px + env(safe-area-inset-bottom))">
+    <sc-for list="{{ nav }}" as="n" hint-placeholder-count="5">
+      <a href="{{ n.href }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;min-height:52px;color:{{ n.mfg }};text-decoration:none;font-size:11px;font-weight:600">
+        <span style="font-family:'Material Symbols Rounded';font-size:24px">{{ n.icon }}</span>{{ n.short }}
+      </a>
+    </sc-for>
+  </nav>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { w: window.innerWidth, route: location.hash.slice(1) || 'dashboard', tab: 'resources', playing: false, qi: 0, answers: {}, done: false, file: null };
+  componentDidMount() {
+    this.onR = () => this.setState({ w: window.innerWidth });
+    this.onH = () => { this.setState({ route: location.hash.slice(1) || 'dashboard' }); window.scrollTo(0, 0); };
+    window.addEventListener('resize', this.onR); window.addEventListener('hashchange', this.onH);
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this.onR); window.removeEventListener('hashchange', this.onH); }
+  renderVals() {
+    const s = this.state, mobile = s.w < 760, r = s.route;
+    const navD = [['dashboard', 'space_dashboard', 'Dashboard', 'Home'], ['player', 'play_lesson', 'My courses', 'Learn'], ['quiz', 'quiz', 'Quizzes', 'Quizzes'], ['research', 'science', 'Research', 'Research'], ['billing', 'receipt_long', 'Billing', 'Billing']];
+    const nav = navD.map(([k, icon, label, short]) => ({ icon, label, short, href: k === 'billing' ? 'SRI Public.dc.html#checkout' : '#' + k, bg: r === k ? 'rgba(75,180,236,.16)' : 'transparent', fg: r === k ? '#fff' : 'rgba(255,255,255,.7)', mfg: r === k ? '#F2B22E' : 'rgba(255,255,255,.7)' }));
+    const Q = [
+      { text: 'A researcher follows 500 smokers and 500 non-smokers for 10 years to compare lung cancer rates. Which study design is this?', opts: ['Case-control study', 'Prospective cohort study', 'Cross-sectional study', 'Randomized controlled trial'], a: 1 },
+      { text: 'Which measure of association is calculated in a case-control study?', opts: ['Relative risk', 'Odds ratio', 'Incidence rate', 'Hazard ratio'], a: 1 },
+      { text: 'What is the main advantage of randomization in a clinical trial?', opts: ['It reduces cost', 'It removes the need for consent', 'It balances known and unknown confounders', 'It increases sample size'], a: 2 },
+      { text: 'A survey measures diabetes prevalence among students at one point in time. This is a…', opts: ['Cross-sectional study', 'Cohort study', 'Ecological study', 'Case series'], a: 0 },
+      { text: 'Which design is best for studying a rare disease?', opts: ['Cohort study', 'Case-control study', 'Cross-sectional study', 'Field trial'], a: 1 },
+    ];
+    const q = Q[s.qi], sel = s.answers[s.qi];
+    const opts = q.opts.map((t, i) => { const on = sel === i; return { t, k: 'ABCD'[i], bg: on ? '#F1F5FD' : '#fff', bd: on ? '#1446A0' : '#E4DFD3', dot: on ? '#1446A0' : '#fff', dotFg: on ? '#fff' : '#5A6280', pick: () => this.setState(st => ({ answers: { ...st.answers, [st.qi]: i } })) }; });
+    const correct = Q.filter((x, i) => s.answers[i] === x.a).length, pct = Math.round(correct / Q.length * 100), pass = pct >= 70;
+    const st = (t, d, state) => ({ t, d, state: state === 'done' ? 'check_circle' : state === 'now' ? 'play_circle' : state === 'quiz' ? 'quiz' : state === 'pdf' ? 'description' : 'radio_button_unchecked', ic: state === 'done' ? '#1E8A5A' : state === 'now' ? '#1446A0' : '#9AA0B5', bg: state === 'now' ? '#F1F5FD' : 'transparent', fw: state === 'now' ? 700 : 500, href: state === 'quiz' ? '#quiz' : '#player' });
+    const tl = (t, d, c) => ({ t, d, c });
+    return {
+      mobile, desktop: !mobile, mainPadB: mobile ? '84px' : '0', nav,
+      isDash: r === 'dashboard' || r === 'billing', isPlayer: r === 'player', isQuiz: r === 'quiz', isResearch: r === 'research',
+      due: [{ icon: 'quiz', t: 'Module 2 quiz', s: 'Research Methodology · 5 questions', when: 'Thu', c: '#C2412D', href: '#quiz' }, { icon: 'videocam', t: 'Live session: Literature search', s: 'With Dr. Salma Reda · Zoom', when: 'Sat 7pm', c: '#0A2160', href: '#dashboard' }, { icon: 'description', t: 'Revise manuscript intro', s: 'Requested by co-admin', when: 'Sun', c: '#B07A08', href: '#research' }],
+      stageDots: [{ t: 'Submitted', c: '#1E8A5A' }, { t: 'Co-admin', c: '#1E8A5A' }, { t: 'Admin', c: '#F2B22E' }, { t: 'Approved', c: '#EEEAE0' }],
+      myCourses: [{ t: 'Research Methodology Foundations', p: '42%' }, { t: 'Biostatistics with SPSS & R', p: '15%' }, { t: 'Intro to Research Ethics', p: '100%' }],
+      playIcon: s.playing ? 'pause' : 'play_arrow', togglePlay: () => this.setState({ playing: !s.playing }),
+      tabs: [['overview', 'Overview'], ['resources', 'Resources · 3'], ['notes', 'Notes']].map(([k, label]) => ({ label, bd: s.tab === k ? '#1446A0' : 'transparent', fg: s.tab === k ? '#0E1736' : '#5A6280', pick: () => this.setState({ tab: k }) })),
+      tabOverview: s.tab === 'overview', tabResources: s.tab === 'resources', tabNotes: s.tab === 'notes',
+      files: [{ ext: 'PDF', t: 'Study design decision chart', s: '2 pages · 340 KB', bg: '#FBE7E3', fg: '#C2412D' }, { ext: 'PDF', t: 'Lecture slides: Observational designs', s: '28 pages · 4.1 MB', bg: '#FBE7E3', fg: '#C2412D' }, { ext: 'DOC', t: 'Example study worksheet', s: 'DOCX · 96 KB', bg: '#E3ECFB', fg: '#1446A0' }],
+      outline: [
+        { t: '01 · Asking a research question', items: [st('What makes a question researchable', '12:04', 'done'), st('PICO and FINER frameworks', '18:30', 'done'), st('PICO worksheet', 'PDF', 'done'), st('Module quiz', '10 Q', 'done')] },
+        { t: '02 · Study designs', items: [st('Observational vs experimental', '22:05', 'now'), st('Choosing the right design', '16:12', ''), st('Design decision chart', 'PDF', 'pdf'), st('Module quiz', '5 Q', 'quiz')] },
+        { t: '03 · Literature search', items: [st('PubMed search strategies', '25:40', ''), st('Managing references with Zotero', '14:18', '')] },
+      ],
+      quizActive: !s.done, quizDone: s.done, qNum: s.qi + 1, qTotal: Q.length, q: { text: q.text, opts },
+      qBar: Q.map((x, i) => ({ c: i === s.qi ? '#1446A0' : s.answers[i] !== undefined ? '#8DB0D6' : '#E4DFD3' })),
+      prevQ: () => this.setState({ qi: Math.max(0, s.qi - 1) }),
+      nextQ: () => s.qi < Q.length - 1 ? this.setState({ qi: s.qi + 1 }) : this.setState({ done: true }),
+      nextLabel: s.qi < Q.length - 1 ? 'Next question' : 'Submit quiz',
+      score: pct + '%', resultTag: pass ? 'Passed' : 'Not passed yet', resultTitle: correct + ' of ' + Q.length + ' correct',
+      review: Q.map((x, i) => ({ q: x.text, a: x.opts[x.a], icon: s.answers[i] === x.a ? 'check_circle' : 'cancel', c: s.answers[i] === x.a ? '#1E8A5A' : '#C2412D' })),
+      retake: () => this.setState({ done: false, qi: 0, answers: {} }),
+      fileLabel: s.file || 'Drop your manuscript or browse', addFile: () => this.setState({ file: 'manuscript_v2.pdf · 1.8 MB' }),
+      subs: [
+        { t: 'Antibiotic resistance awareness among first-year medical students', status: 'Admin review', sc: '#B07A08', sb: '#FCF1D6', meta: 'Original research · submitted 18 Oct · Dr. Toka Essam Samir', timeline: [tl('Waiting for admin approval', 'Forwarded 24 Oct', '#F2B22E'), tl('Co-admin review passed', 'Youssef A.: "Clear methods. Tighten the discussion before the conference."', '#1E8A5A'), tl('Submitted', 'manuscript_v2.pdf', '#1E8A5A')] },
+        { t: 'Sleep quality and exam performance: a cross-sectional survey', status: 'Changes requested', sc: '#C2412D', sb: '#FBE7E3', meta: 'Original research · submitted 2 Oct', timeline: [tl('Changes requested', 'Nada K.: "Sample size justification is missing. Please add a power calculation."', '#C2412D'), tl('Submitted', 'sleep_survey.pdf', '#1E8A5A')] },
+        { t: 'Vitamin D deficiency in young adults: a systematic review', status: 'Approved', sc: '#1E8A5A', sb: '#E3F3EA', meta: 'Systematic review · approved 12 Aug', timeline: [tl('Approved by admin', 'Put forward to the EPNU Annual Research Day', '#1E8A5A')] },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

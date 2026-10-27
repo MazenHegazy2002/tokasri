@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800;900&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#E7E3D8}a{color:#1446A0;text-decoration:none}a:hover{color:#0A2160;text-decoration:underline}</style>
+</helmet>
+<div style="font-family:'Montserrat',sans-serif;color:#0E1736;padding:64px;display:flex;flex-direction:column;gap:88px;width:max-content">
+  <div style="display:flex;align-items:center;gap:20px">
+    <img src="assets/sri-logo.png" alt="SRI" style="width:84px;height:84px;border-radius:50%">
+    <div>
+      <div style="font-weight:900;font-size:44px;line-height:1">SRI Learning Platform</div>
+      <div style="font-size:18px;color:#5A6280;margin-top:6px">Every screen at desktop (1440) and mobile (390). Each frame is live and clickable. Open full screen: <a href="SRI Public.dc.html">Public</a> · <a href="SRI Student.dc.html">Student</a> · <a href="SRI Admin.dc.html">Admin</a></div>
+    </div>
+  </div>
+  <sc-for list="{{ groups }}" as="g" hint-placeholder-count="4">
+    <section style="display:flex;flex-direction:column;gap:32px">
+      <div style="display:flex;align-items:baseline;gap:16px;border-bottom:2px solid #0E1736;padding-bottom:12px">
+        <span style="font-weight:900;font-size:36px;color:#F2B22E">{{ g.n }}</span>
+        <span style="font-family:'DM Serif Display',serif;font-size:40px">{{ g.t }}</span>
+      </div>
+      <sc-for list="{{ g.screens }}" as="s" hint-placeholder-count="2">
+        <div id="{{ s.id }}" style="display:flex;gap:40px;align-items:flex-start">
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;gap:10px"><span style="background:#071A44;color:#fff;font-weight:800;font-size:13px;padding:4px 10px;border-radius:6px">{{ s.id }}</span><span style="font-weight:700;font-size:18px">{{ s.t }}</span><span style="color:#5A6280;font-size:14px">Desktop</span></div>
+            <iframe src="{{ s.src }}" title="{{ s.t }} desktop" style="width:1440px;height:900px;border:0;border-radius:14px;background:#fff;box-shadow:0 30px 60px rgba(7,26,68,.18)"></iframe>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;gap:10px"><span style="font-weight:700;font-size:18px">&nbsp;</span><span style="color:#5A6280;font-size:14px">Mobile</span></div>
+            <div style="background:#0E1736;padding:10px;border-radius:44px;box-shadow:0 30px 60px rgba(7,26,68,.25)">
+              <iframe src="{{ s.src }}" title="{{ s.t }} mobile" style="width:390px;height:844px;border:0;border-radius:34px;background:#fff;display:block"></iframe>
+            </div>
+          </div>
+        </div>
+      </sc-for>
+    </section>
+  </sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const S = (id, t, f, h) => ({ id, t, src: f + '#' + h });
+    const P = 'SRI Public.dc.html', St = 'SRI Student.dc.html', A = 'SRI Admin.dc.html';
+    return { groups: [
+      { n: '01', t: 'Public site', screens: [S('1a', 'Landing & course catalog', P, 'landing'), S('1b', 'Course detail', P, 'course'), S('1c', 'Checkout & payment', P, 'checkout'), S('1d', 'Sign in / sign up', P, 'login')] },
+      { n: '02', t: 'Student', screens: [S('2a', 'Student dashboard', St, 'dashboard'), S('2b', 'Course player: video & PDFs', St, 'player'), S('2c', 'Quiz', St, 'quiz'), S('2d', 'Research upload & status', St, 'research')] },
+      { n: '03', t: 'Admin', screens: [S('3a', 'Admin overview', A, 'dashboard'), S('3b', 'Courses & categories', A, 'courses'), S('3c', 'Course builder', A, 'builder'), S('3d', 'Topic editor', A, 'topic/1'), S('3e', 'Media library', A, 'library'), S('3f', 'Quizzes', A, 'quizzes'), S('3g', 'Students', A, 'students'), S('3h', 'Research review queue', A, 'review'), S('3i', 'Payments & coupons', A, 'payments'), S('3j', 'Roles & permissions', A, 'settings')] },
+      { n: '04', t: 'Co-admin (restricted)', screens: [S('4a', 'Co-admin overview', A, 'dashboard?role=coadmin'), S('4b', 'Co-admin first review', A, 'review?role=coadmin')] },
+    ] };
+  }
+}
+</script>
+</body>
+</html>
