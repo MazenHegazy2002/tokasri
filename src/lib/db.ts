@@ -1,6 +1,7 @@
 import { DatabaseSync } from 'node:sqlite';
 import path from 'node:path';
 import fs from 'node:fs';
+import os from 'node:os';
 import crypto from 'node:crypto';
 
 function hashPwd(plain: string): string {
@@ -10,22 +11,62 @@ function hashPwd(plain: string): string {
 }
 
 const DATA_DIR = path.join(process.cwd(), 'data');
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
-}
-
-const DB_PATH = path.join(DATA_DIR, 'sri-lms.sqlite');
+const SEED_DB_PATH = path.join(DATA_DIR, 'sri-lms.sqlite');
 
 declare global {
   // eslint-disable-next-line no-var
   var __sriDb: DatabaseSync | undefined;
 }
 
+function resolveWritableDbPath(): string {
+  const isServerless = !!process.env.VERCEL || !!process.env.AWS_LAMBDA_FUNCTION_NAME;
+  if (!isServerless) {
+    try {
+      if (!fs.existsSync(DATA_DIR)) {
+        fs.mkdirSync(DATA_DIR, { recursive: true });
+      }
+      fs.accessSync(DATA_DIR, fs.constants.W_OK);
+      return SEED_DB_PATH;
+    } catch {
+      // Directory is read-only; fall through to /tmp
+    }
+  }
+
+  const tmpDbPath = path.join(os.tmpdir(), 'sri-lms.sqlite');
+  try {
+    if (!fs.existsSync(tmpDbPath) && fs.existsSync(SEED_DB_PATH)) {
+      fs.copyFileSync(SEED_DB_PATH, tmpDbPath);
+      try {
+        fs.chmodSync(tmpDbPath, 0o666);
+      } catch {
+        // ignore chmod errors
+      }
+    }
+    return tmpDbPath;
+  } catch {
+    return ':memory:';
+  }
+}
+
 export function getDb(): DatabaseSync {
   if (!global.__sriDb) {
-    const db = new DatabaseSync(DB_PATH);
-    db.exec('PRAGMA journal_mode = WAL;');
-    initSchemaAndSeed(db);
+    let db: DatabaseSync;
+    try {
+      const targetPath = resolveWritableDbPath();
+      db = new DatabaseSync(targetPath);
+      if (targetPath !== ':memory:') {
+        try {
+          db.exec('PRAGMA journal_mode = WAL;');
+        } catch {
+          // If WAL fails on the filesystem, continue with default journal mode
+        }
+      }
+      initSchemaAndSeed(db);
+    } catch {
+      // Ultimate fallback: pure in-memory SQLite database so serverless environments never crash
+      db = new DatabaseSync(':memory:');
+      initSchemaAndSeed(db);
+    }
     global.__sriDb = db;
   }
   return global.__sriDb;
